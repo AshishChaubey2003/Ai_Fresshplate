@@ -1,5 +1,5 @@
 // ===== API CONFIG =====
-const API_BASE = "https://ai-fresshplate.onrender.com";
+const API_BASE = "https://ai-fresshplate.onrender.com/api";
 
 // ===== AUTH HELPERS =====
 const Auth = {
