@@ -1,4 +1,4 @@
-import anthropic
+import google.generativeai as genai
 from django.conf import settings
 from rest_framework import status
 from rest_framework.response import Response
@@ -6,6 +6,7 @@ from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
 from .models import ChatSession, ChatMessage
 
+genai.configure(api_key=settings.GEMINI_API_KEY)
 
 class ChatView(APIView):
     permission_classes = [IsAuthenticated]
@@ -42,25 +43,31 @@ class ChatView(APIView):
         ChatMessage.objects.create(session=session, role='user', content=user_message)
 
         history = session.messages.all().order_by('created_at')
-        messages_for_api = [{'role': m.role, 'content': m.content} for m in history]
 
         try:
-            client = anthropic.Anthropic(api_key=settings.ANTHROPIC_API_KEY)
-            response = client.messages.create(
-                model='claude-opus-4-5',
-                max_tokens=1024,
-                system="""You are FreshPlate AI Assistant — a helpful, friendly chatbot for FreshPlate, 
+            model = genai.GenerativeModel(
+                model_name='gemini-1.5-flash',
+                system_instruction="""You are FreshPlate AI Assistant — a helpful, friendly chatbot for FreshPlate,
                 a Cloud Kitchen and Food Rescue Platform. You help users with:
                 - Browsing food menu and placing orders
                 - Tracking order status
                 - Food donation process
                 - Account and profile management
                 - General food and nutrition queries
-                Always be polite, helpful and respond in the same language the user uses.""",
-                messages=messages_for_api,
+                Always be polite, helpful and respond in the same language the user uses."""
             )
 
-            assistant_message = response.content[0].text
+            chat_history = []
+            for m in history:
+                if m.role == 'user':
+                    chat_history.append({'role': 'user', 'parts': [m.content]})
+                elif m.role == 'assistant':
+                    chat_history.append({'role': 'model', 'parts': [m.content]})
+
+            chat = model.start_chat(history=chat_history[:-1])
+            response = chat.send_message(user_message)
+            assistant_message = response.text
+
             ChatMessage.objects.create(session=session, role='assistant', content=assistant_message)
 
             return Response({
@@ -69,11 +76,7 @@ class ChatView(APIView):
             }, status=status.HTTP_200_OK)
 
         except Exception as e:
-            # import traceback
-            # traceback.print_exc()
-            return Response({'error': f'AI service error: {str(e)}'}, 
-                            
-                            status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            return Response({'error': f'AI service error: {str(e)}'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 class DeleteChatSessionView(APIView):
