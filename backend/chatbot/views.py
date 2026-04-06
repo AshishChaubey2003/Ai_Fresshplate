@@ -77,6 +77,7 @@ class ChatView(APIView):
             }, status=status.HTTP_200_OK)
 
         except Exception as e:
+            print(f"CHATBOT ERROR: {str(e)}")  
             return Response({'error': f'AI service error: {str(e)}'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
