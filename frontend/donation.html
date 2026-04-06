@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Donate Food — FreshPlate</title>
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    .donations-page {
+      margin-top: 70px;
+      min-height: calc(100vh - 70px);
+    }
+
+    .donations-hero {
+      background: linear-gradient(135deg, var(--secondary) 0%, var(--secondary-light) 100%);
+      padding: 4rem 0;
+      color: white;
+      text-align: center;
+    }
+
+    .donations-hero-title {
+      font-size: 2.8rem;
+      font-weight: 700;
+      color: white;
+      margin-bottom: 1rem;
+    }
+
+    .donations-hero-subtitle {
+      color: rgba(255,255,255,0.8);
+      font-size: 1.1rem;
+      max-width: 600px;
+      margin: 0 auto 2rem;
+      line-height: 1.8;
+    }
+
+    .hero-stats-row {
+      display: flex;
+      justify-content: center;
+      gap: 3rem;
+      flex-wrap: wrap;
+    }
+
+    .hero-stat {
+      text-align: center;
+    }
+
+    .hero-stat-num {
+      font-family: 'Playfair Display', serif;
+      font-size: 2.2rem;
+      font-weight: 700;
+      color: var(--accent);
+    }
+
+    .hero-stat-lbl {
+      font-size: 0.85rem;
+      color: rgba(255,255,255,0.7);
+    }
+
+    /* DONATION FORM */
+    .donation-layout {
+      display: grid;
+      grid-template-columns: 1fr 400px;
+      gap: 2rem;
+      padding: 3rem 0;
+    }
+
+    .form-section-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+      margin-bottom: 1.25rem;
+      padding-bottom: 0.75rem;
+      border-bottom: 2px solid var(--primary);
+      color: var(--text-primary);
+    }
+
+    .food-type-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 0.75rem;
+      margin-bottom: 1.25rem;
+    }
+
+    .food-type-option {
+      border: 2px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 1rem;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .food-type-option:hover {
+      border-color: var(--secondary);
+    }
+
+    .food-type-option.selected {
+      border-color: var(--secondary);
+      background: rgba(45,74,62,0.06);
+    }
+
+    .food-type-icon {
+      font-size: 1.8rem;
+      margin-bottom: 0.4rem;
+    }
+
+    .food-type-label {
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--text-secondary);
+    }
+
+    .food-type-option.selected .food-type-label {
+      color: var(--secondary);
+    }
+
+    /* SIDEBAR */
+    .donation-sidebar {
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+    }
+
+    .info-card {
+      background: white;
+      border-radius: var(--radius-md);
+      padding: 1.5rem;
+      border: 1px solid var(--border);
+    }
+
+    .info-card-title {
+      font-weight: 700;
+      margin-bottom: 1rem;
+      font-size: 1rem;
+    }
+
+    .info-steps {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .info-step {
+      display: flex;
+      gap: 0.75rem;
+      align-items: flex-start;
+    }
+
+    .info-step-icon {
+      width: 36px;
+      height: 36px;
+      background: rgba(45,74,62,0.1);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+      flex-shrink: 0;
+    }
+
+    .info-step-text {
+      font-size: 0.88rem;
+      color: var(--text-secondary);
+      line-height: 1.5;
+    }
+
+    .info-step-text strong {
+      display: block;
+      color: var(--text-primary);
+      margin-bottom: 0.2rem;
+    }
+
+    /* MY DONATIONS */
+    .my-donations-section {
+      padding: 3rem 0;
+      background: var(--bg);
+    }
+
+    .donation-item-card {
+      background: white;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border);
+      padding: 1.25rem 1.5rem;
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      transition: box-shadow 0.3s;
+    }
+
+    .donation-item-card:hover {
+      box-shadow: var(--shadow-md);
+    }
+
+    .donation-info {
+      flex: 1;
+    }
+
+    .donation-name {
+      font-weight: 700;
+      font-size: 1rem;
+      margin-bottom: 0.3rem;
+    }
+
+    .donation-meta {
+      font-size: 0.83rem;
+      color: var(--text-muted);
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .rescue-centers-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.25rem;
+      margin-top: 1rem;
+    }
+
+    .rescue-center-card {
+      background: white;
+      border-radius: var(--radius-md);
+      padding: 1.25rem;
+      border: 1px solid var(--border);
+      transition: all 0.3s;
+    }
+
+    .rescue-center-card:hover {
+      box-shadow: var(--shadow-md);
+      border-color: var(--secondary);
+    }
+
+    @media (max-width: 1024px) {
+      .donation-layout { grid-template-columns: 1fr; }
+      .rescue-centers-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    @media (max-width: 768px) {
+      .donations-hero-title { font-size: 2rem; }
+      .hero-stats-row { gap: 1.5rem; }
+      .food-type-grid { grid-template-columns: repeat(2, 1fr); }
+      .donation-item-card { flex-direction: column; align-items: flex-start; }
+      .rescue-centers-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAVBAR -->
+  <nav class="navbar">
+    <a href="index.html" class="navbar-brand">Fresh<span>Plate</span></a>
+    <ul class="navbar-nav">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="menu.html">Menu</a></li>
+      <li><a href="donation.html" class="active">Donate Food</a></li>
+      <li><a href="chatbot.html">AI Assistant</a></li>
+      <li><a href="orders.html">My Orders</a></li>
+    </ul>
+    <div class="navbar-actions"></div>
+    <div class="hamburger"><span></span><span></span><span></span></div>
+  </nav>
+
+  <div class="donations-page">
+
+    <!-- HERO -->
+    <div class="donations-hero">
+      <div class="container">
+        <h1 class="donations-hero-title">🤝 Donate Food, Save Lives</h1>
+        <p class="donations-hero-subtitle">
+          Have surplus food? Don't let it go to waste. Donate it through FreshPlate and help rescue centers feed those in need. Every meal counts!
+        </p>
+        <div class="hero-stats-row">
+          <div class="hero-stat">
+            <div class="hero-stat-num">200+</div>
+            <div class="hero-stat-lbl">Meals Donated</div>
+          </div>
+          <div class="hero-stat">
+            <div class="hero-stat-num">50+</div>
+            <div class="hero-stat-lbl">Active Donors</div>
+          </div>
+          <div class="hero-stat">
+            <div class="hero-stat-num">10+</div>
+            <div class="hero-stat-lbl">Rescue Centers</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- DONATION FORM + SIDEBAR -->
+    <div class="container">
+      <div class="donation-layout">
+
+        <!-- FORM -->
+        <div>
+          <div style="background:white;border-radius:var(--radius-lg);padding:2rem;border:1px solid var(--border);">
+            <h2 style="font-size:1.5rem;font-weight:700;margin-bottom:0.5rem;">📋 Submit a Donation</h2>
+            <p style="color:var(--text-secondary);margin-bottom:2rem;font-size:0.95rem;">
+              Fill in the details about the food you want to donate
+            </p>
+
+            <div id="donationAlert"></div>
+
+            <div id="loginPrompt" style="display:none;">
+              <div class="alert alert-warning">
+                ⚠️ Please <a href="login.html" style="color:var(--primary);font-weight:600;">login</a> as a Donor to submit a donation.
+              </div>
+            </div>
+
+            <form id="donationForm">
+              <div class="form-section-title">🍱 Food Details</div>
+
+              <div class="form-group">
+                <label class="form-label">Food Name *</label>
+                <input type="text" id="food_name" class="form-control" placeholder="e.g. Biryani, Roti Sabzi, Fruits..." required>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Food Type *</label>
+                <div class="food-type-grid">
+                  <div class="food-type-option selected" onclick="selectFoodType('cooked', this)">
+                    <div class="food-type-icon">🍛</div>
+                    <div class="food-type-label">Cooked Food</div>
+                  </div>
+                  <div class="food-type-option" onclick="selectFoodType('raw', this)">
+                    <div class="food-type-icon">🥕</div>
+                    <div class="food-type-label">Raw Food</div>
+                  </div>
+                  <div class="food-type-option" onclick="selectFoodType('packaged', this)">
+                    <div class="food-type-icon">📦</div>
+                    <div class="food-type-label">Packaged Food</div>
+                  </div>
+                  <div class="food-type-option" onclick="selectFoodType('fruits_vegetables', this)">
+                    <div class="food-type-icon">🍎</div>
+                    <div class="food-type-label">Fruits & Vegetables</div>
+                  </div>
+                </div>
+                <input type="hidden" id="food_type" value="cooked">
+              </div>
+
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
+                <div class="form-group">
+                  <label class="form-label">Quantity *</label>
+                  <input type="text" id="quantity" class="form-control" placeholder="e.g. 5 kg, 10 plates" required>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Description</label>
+                  <input type="text" id="description" class="form-control" placeholder="Brief description...">
+                </div>
+              </div>
+
+              <div class="form-section-title" style="margin-top:1.5rem;">📍 Pickup Details</div>
+
+              <div class="form-group">
+                <label class="form-label">Pickup Address *</label>
+                <textarea id="pickup_address" class="form-control" rows="2"
+                  placeholder="Full address for food pickup..." required></textarea>
+              </div>
+
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
+                <div class="form-group">
+                  <label class="form-label">Pickup Time *</label>
+                  <input type="datetime-local" id="pickup_time" class="form-control" required>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Food Expiry Time *</label>
+                  <input type="datetime-local" id="expiry_time" class="form-control" required>
+                </div>
+              </div>
+
+              <button type="submit" class="btn btn-secondary btn-lg btn-block" id="donateBtn">
+                🤝 Submit Donation
+              </button>
+            </form>
+          </div>
+        </div>
+
+        <!-- SIDEBAR -->
+        <div class="donation-sidebar">
+
+          <div class="info-card">
+            <div class="info-card-title">📋 How It Works</div>
+            <div class="info-steps">
+              <div class="info-step">
+                <div class="info-step-icon">📝</div>
+                <div class="info-step-text">
+                  <strong>Submit Details</strong>
+                  Fill in food info, quantity and pickup time
+                </div>
+              </div>
+              <div class="info-step">
+                <div class="info-step-icon">✅</div>
+                <div class="info-step-text">
+                  <strong>Admin Approval</strong>
+                  Our team reviews and approves your donation
+                </div>
+              </div>
+              <div class="info-step">
+                <div class="info-step-icon">🚗</div>
+                <div class="info-step-text">
+                  <strong>Food Pickup</strong>
+                  Rescue center volunteers pick up the food
+                </div>
+              </div>
+              <div class="info-step">
+                <div class="info-step-icon">🎉</div>
+                <div class="info-step-text">
+                  <strong>Food Distributed</strong>
+                  Food reaches those who need it most
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="info-card" style="background:linear-gradient(135deg,#f0f7f4,#e8f5f0);">
+            <div class="info-card-title">💚 Why Donate?</div>
+            <div style="display:flex;flex-direction:column;gap:0.6rem;">
+              <div style="font-size:0.88rem;color:var(--text-secondary);display:flex;gap:0.5rem;">
+                <span>✅</span> Reduce food waste
+              </div>
+              <div style="font-size:0.88rem;color:var(--text-secondary);display:flex;gap:0.5rem;">
+                <span>✅</span> Feed the hungry
+              </div>
+              <div style="font-size:0.88rem;color:var(--text-secondary);display:flex;gap:0.5rem;">
+                <span>✅</span> Help rescue centers
+              </div>
+              <div style="font-size:0.88rem;color:var(--text-secondary);display:flex;gap:0.5rem;">
+                <span>✅</span> Make a real difference
+              </div>
+              <div style="font-size:0.88rem;color:var(--text-secondary);display:flex;gap:0.5rem;">
+                <span>✅</span> Track your donations
+              </div>
+            </div>
+          </div>
+
+          <!-- MY DONATIONS PREVIEW -->
+          <div class="info-card" id="myDonationsCard" style="display:none;">
+            <div class="info-card-title">📦 My Recent Donations</div>
+            <div id="myDonationsList"></div>
+            <a href="#myDonations" class="btn btn-ghost btn-sm btn-block" style="margin-top:0.75rem;">
+              View All →
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- MY DONATIONS LIST -->
+    <div class="my-donations-section" id="myDonations">
+      <div class="container">
+        <h2 style="font-size:1.8rem;font-weight:700;margin-bottom:0.5rem;">📦 My Donations</h2>
+        <p style="color:var(--text-secondary);margin-bottom:2rem;">Track all your food donations</p>
+        <div id="donationsList">
+          <div class="loading-container"><div class="spinner"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- RESCUE CENTERS -->
+    <div style="padding:3rem 0;">
+      <div class="container">
+        <h2 style="font-size:1.8rem;font-weight:700;margin-bottom:0.5rem;">🏥 Rescue Centers</h2>
+        <p style="color:var(--text-secondary);margin-bottom:2rem;">Centers that receive and distribute donated food</p>
+        <div class="rescue-centers-grid" id="rescueCentersList">
+          <div class="loading-container"><div class="spinner"></div></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-bottom">
+        <p>© 2025 FreshPlate. Built with ❤️ by Ashish Kumar Chaubey</p>
+      </div>
+    </div>
+  </footer>
+
+  <script src="javascript/main.js"></script>
+  <script>
+    function selectFoodType(type, el) {
+      document.querySelectorAll('.food-type-option').forEach(o => o.classList.remove('selected'));
+      el.classList.add('selected');
+      document.getElementById('food_type').value = type;
+    }
+
+    // Set min datetime to now
+    const now = new Date();
+    now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+    const nowStr = now.toISOString().slice(0, 16);
+    document.getElementById('pickup_time').min = nowStr;
+    document.getElementById('pickup_time').value = nowStr;
+    document.getElementById('expiry_time').min = nowStr;
+
+    // Show/hide form based on auth
+    if (!Auth.isLoggedIn() || (!Auth.isDonor() && !Auth.isAdmin())) {
+      document.getElementById('loginPrompt').style.display = 'block';
+      document.getElementById('donationForm').style.display = 'none';
+    }
+
+    document.getElementById('donationForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const btn = document.getElementById('donateBtn');
+      btn.textContent = 'Submitting...';
+      btn.disabled = true;
+
+      const payload = {
+        food_name: document.getElementById('food_name').value,
+        food_type: document.getElementById('food_type').value,
+        quantity: document.getElementById('quantity').value,
+        description: document.getElementById('description').value,
+        pickup_address: document.getElementById('pickup_address').value,
+        pickup_time: document.getElementById('pickup_time').value,
+        expiry_time: document.getElementById('expiry_time').value,
+      };
+
+      try {
+        await Api.post('/donations/create/', payload);
+        document.getElementById('donationAlert').innerHTML = `
+          <div class="alert alert-success">✅ Donation submitted! Our team will review it shortly.</div>`;
+        document.getElementById('donationForm').reset();
+        showToast('Donation submitted successfully! 🎉');
+        loadMyDonations();
+      } catch (err) {
+        document.getElementById('donationAlert').innerHTML = `
+          <div class="alert alert-danger">❌ Failed to submit donation. Please try again.</div>`;
+      } finally {
+        btn.textContent = '🤝 Submit Donation';
+        btn.disabled = false;
+      }
+    });
+
+    async function loadMyDonations() {
+      if (!Auth.isLoggedIn()) {
+        document.getElementById('donationsList').innerHTML = `
+          <div class="empty-state">
+            <div class="empty-state-icon">🔐</div>
+            <div class="empty-state-title">Login to see your donations</div>
+            <a href="login.html" class="btn btn-primary" style="margin-top:1rem;">Login</a>
+          </div>`;
+        return;
+      }
+
+      try {
+        const donations = await Api.get('/donations/my-donations/');
+
+        if (donations.length === 0) {
+          document.getElementById('donationsList').innerHTML = `
+            <div class="empty-state">
+              <div class="empty-state-icon">🤝</div>
+              <div class="empty-state-title">No donations yet</div>
+              <p>Submit your first donation above!</p>
+            </div>`;
+          return;
+        }
+
+        // Show preview in sidebar
+        if (donations.length > 0) {
+          document.getElementById('myDonationsCard').style.display = 'block';
+          document.getElementById('myDonationsList').innerHTML = donations.slice(0, 2).map(d => `
+            <div style="display:flex;justify-content:space-between;align-items:center;padding:0.6rem 0;border-bottom:1px solid var(--border);">
+              <div>
+                <div style="font-weight:600;font-size:0.88rem;">${d.food_name}</div>
+                <div style="font-size:0.78rem;color:var(--text-muted);">${d.quantity}</div>
+              </div>
+              ${getDonationBadge(d.status)}
+            </div>
+          `).join('');
+        }
+
+        document.getElementById('donationsList').innerHTML = donations.map(d => `
+          <div class="donation-item-card">
+            <div style="font-size:2rem;">🤝</div>
+            <div class="donation-info">
+              <div class="donation-name">${d.food_name}</div>
+              <div class="donation-meta">
+                <span>📦 ${d.quantity}</span>
+                <span>🍱 ${d.food_type.replace('_', ' ')}</span>
+                <span>📍 ${d.pickup_address.substring(0, 40)}...</span>
+                <span>📅 ${formatDate(d.created_at)}</span>
+              </div>
+              ${d.admin_note ? `<div style="margin-top:0.5rem;font-size:0.83rem;color:var(--text-secondary);">📝 Admin Note: ${d.admin_note}</div>` : ''}
+            </div>
+            <div>${getDonationBadge(d.status)}</div>
+          </div>
+        `).join('');
+      } catch (e) {
+        document.getElementById('donationsList').innerHTML = `
+          <div class="empty-state">
+            <div class="empty-state-icon">😕</div>
+            <div class="empty-state-title">Could not load donations</div>
+          </div>`;
+      }
+    }
+
+    async function loadRescueCenters() {
+      try {
+        const centers = await Api.get('/donations/rescue-centers/', false);
+        const container = document.getElementById('rescueCentersList');
+
+        if (centers.length === 0) {
+          container.innerHTML = `<div class="empty-state"><p>No rescue centers registered yet</p></div>`;
+          return;
+        }
+
+        container.innerHTML = centers.map(c => `
+          <div class="rescue-center-card">
+            <div style="font-size:2rem;margin-bottom:0.75rem;">🏥</div>
+            <div style="font-weight:700;margin-bottom:0.4rem;">${c.name}</div>
+            <div style="font-size:0.85rem;color:var(--text-secondary);margin-bottom:0.75rem;line-height:1.5;">${c.address}</div>
+            <div style="font-size:0.83rem;color:var(--text-muted);">
+              <div>👤 ${c.contact_person}</div>
+              <div>📞 ${c.phone}</div>
+              ${c.email ? `<div>📧 ${c.email}</div>` : ''}
+            </div>
+          </div>
+        `).join('');
+      } catch (e) {
+        document.getElementById('rescueCentersList').innerHTML = `<p style="color:var(--text-muted);">Could not load rescue centers</p>`;
+      }
+    }
+
+    loadMyDonations();
+    loadRescueCenters();
+  </script>
+</body>
+</html>

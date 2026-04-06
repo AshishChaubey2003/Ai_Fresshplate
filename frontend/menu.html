@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Menu — FreshPlate</title>
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    .menu-hero {
+      background: linear-gradient(135deg, #fff5f0, #f0f7f4);
+      padding: 3rem 0 2rem;
+      margin-top: 70px;
+    }
+
+    .menu-hero-title {
+      font-size: 2.5rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+    }
+
+    .search-bar {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      background: white;
+      border-radius: var(--radius-lg);
+      padding: 0.75rem 1.25rem;
+      box-shadow: var(--shadow-md);
+      max-width: 600px;
+      margin-top: 1.5rem;
+    }
+
+    .search-bar input {
+      flex: 1;
+      border: none;
+      outline: none;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 1rem;
+      color: var(--text-primary);
+    }
+
+    .search-bar input::placeholder {
+      color: var(--text-muted);
+    }
+
+    .search-btn {
+      background: var(--primary);
+      color: white;
+      border: none;
+      padding: 0.6rem 1.2rem;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      font-weight: 500;
+      transition: background 0.2s;
+    }
+
+    .search-btn:hover {
+      background: var(--primary-dark);
+    }
+
+    .menu-layout {
+      display: grid;
+      grid-template-columns: 260px 1fr;
+      gap: 2rem;
+      margin-top: 2rem;
+    }
+
+    /* FILTERS SIDEBAR */
+    .filters-sidebar {
+      position: sticky;
+      top: 90px;
+      height: fit-content;
+    }
+
+    .filter-card {
+      background: white;
+      border-radius: var(--radius-md);
+      padding: 1.5rem;
+      border: 1px solid var(--border);
+      margin-bottom: 1rem;
+    }
+
+    .filter-title {
+      font-weight: 700;
+      margin-bottom: 1rem;
+      font-size: 0.95rem;
+      color: var(--text-primary);
+    }
+
+    .filter-options {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .filter-option {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      cursor: pointer;
+      padding: 0.5rem 0.75rem;
+      border-radius: var(--radius-sm);
+      transition: background 0.2s;
+      font-size: 0.9rem;
+      color: var(--text-secondary);
+      border: 1.5px solid transparent;
+    }
+
+    .filter-option:hover {
+      background: var(--bg);
+    }
+
+    .filter-option.active {
+      background: rgba(255,107,53,0.08);
+      color: var(--primary);
+      border-color: rgba(255,107,53,0.2);
+      font-weight: 500;
+    }
+
+    .category-pill {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .category-count {
+      background: var(--bg);
+      padding: 2px 8px;
+      border-radius: 10px;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    .filter-option.active .category-count {
+      background: rgba(255,107,53,0.15);
+      color: var(--primary);
+    }
+
+    /* MENU GRID */
+    .menu-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.5rem;
+    }
+
+    .menu-toolbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1.5rem;
+    }
+
+    .results-count {
+      font-size: 0.9rem;
+      color: var(--text-secondary);
+    }
+
+    .sort-select {
+      padding: 0.5rem 1rem;
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-sm);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.9rem;
+      outline: none;
+      color: var(--text-primary);
+      background: white;
+      cursor: pointer;
+    }
+
+    .veg-toggle {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.9rem;
+      color: var(--text-secondary);
+      cursor: pointer;
+    }
+
+    .toggle-switch {
+      width: 44px;
+      height: 24px;
+      background: var(--border);
+      border-radius: 12px;
+      position: relative;
+      transition: background 0.3s;
+      cursor: pointer;
+    }
+
+    .toggle-switch.on {
+      background: var(--success);
+    }
+
+    .toggle-switch::after {
+      content: '';
+      position: absolute;
+      width: 18px;
+      height: 18px;
+      background: white;
+      border-radius: 50%;
+      top: 3px;
+      left: 3px;
+      transition: left 0.3s;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.2);
+    }
+
+    .toggle-switch.on::after {
+      left: 23px;
+    }
+
+    @media (max-width: 1024px) {
+      .menu-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    @media (max-width: 768px) {
+      .menu-layout { grid-template-columns: 1fr; }
+      .filters-sidebar { position: static; }
+      .menu-grid { grid-template-columns: repeat(2, 1fr); }
+      .filter-options { flex-direction: row; flex-wrap: wrap; }
+    }
+
+    @media (max-width: 480px) {
+      .menu-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAVBAR -->
+  <nav class="navbar">
+    <a href="index.html" class="navbar-brand">Fresh<span>Plate</span></a>
+    <ul class="navbar-nav">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="menu.html" class="active">Menu</a></li>
+      <li><a href="donation.html">Donate Food</a></li>
+      <li><a href="chatbot.html">AI Assistant</a></li>
+      <li><a href="orders.html">My Orders</a></li>
+    </ul>
+    <div class="navbar-actions"></div>
+    <div class="hamburger"><span></span><span></span><span></span></div>
+  </nav>
+
+  <!-- MENU HERO -->
+  <div class="menu-hero">
+    <div class="container">
+      <h1 class="menu-hero-title">🍽️ Our Menu</h1>
+      <p style="color:var(--text-secondary);">Fresh, delicious meals made with love every day</p>
+      <div class="search-bar">
+        <span>🔍</span>
+        <input type="text" id="searchInput" placeholder="Search for dishes, categories..." oninput="filterFoods()">
+        <button class="search-btn" onclick="filterFoods()">Search</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="container" style="padding-bottom:4rem;">
+    <div class="menu-layout">
+
+      <!-- SIDEBAR -->
+      <div class="filters-sidebar">
+
+        <!-- VEG FILTER -->
+        <div class="filter-card">
+          <div class="filter-title">🥗 Food Type</div>
+          <div style="display:flex;align-items:center;justify-content:space-between;">
+            <span class="veg-toggle" onclick="toggleVeg()">
+              <div class="toggle-switch" id="vegToggle"></div>
+              Veg Only
+            </span>
+          </div>
+        </div>
+
+        <!-- CATEGORIES -->
+        <div class="filter-card">
+          <div class="filter-title">📂 Categories</div>
+          <div class="filter-options" id="categoryFilters">
+            <div class="filter-option active category-pill" onclick="filterByCategory('all', this)">
+              <span>🍽️ All Items</span>
+              <span class="category-count" id="allCount">0</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- STATUS FILTER -->
+        <div class="filter-card">
+          <div class="filter-title">🏷️ Type</div>
+          <div class="filter-options">
+            <div class="filter-option active" onclick="filterByStatus('all', this)">🍴 All</div>
+            <div class="filter-option" onclick="filterByStatus('available', this)">✅ Available</div>
+            <div class="filter-option" onclick="filterByStatus('rescue', this)">🤝 Rescue Food</div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- MENU CONTENT -->
+      <div>
+        <div class="menu-toolbar">
+          <div class="results-count" id="resultsCount">Loading...</div>
+          <select class="sort-select" id="sortSelect" onchange="sortFoods()">
+            <option value="default">Sort by: Default</option>
+            <option value="price_low">Price: Low to High</option>
+            <option value="price_high">Price: High to Low</option>
+            <option value="rating">Top Rated</option>
+            <option value="popular">Most Popular</option>
+          </select>
+        </div>
+
+        <div class="menu-grid" id="menuGrid">
+          <div class="loading-container" style="grid-column:1/-1;">
+            <div class="spinner"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-bottom">
+        <p>© 2025 FreshPlate. Built with ❤️ by Ashish Kumar Chaubey</p>
+      </div>
+    </div>
+  </footer>
+
+  <script src="javascript/main.js"></script>
+  <script>
+    let allFoods = [];
+    let filteredFoods = [];
+    let categories = [];
+    let activeCategory = 'all';
+    let activeStatus = 'all';
+    let vegOnly = false;
+    let searchQuery = '';
+
+    async function loadMenu() {
+      try {
+        const [foodRes, catRes] = await Promise.all([
+          Api.get('/food/items/', false),
+          Api.get('/food/categories/', false)
+        ]);
+        allFoods = foodRes;
+        categories = catRes;
+        renderCategories();
+        applyFilters();
+      } catch (e) {
+        document.getElementById('menuGrid').innerHTML = `
+          <div class="empty-state" style="grid-column:1/-1;">
+            <div class="empty-state-icon">😕</div>
+            <div class="empty-state-title">Could not load menu</div>
+            <p>Please make sure the server is running</p>
+          </div>`;
+      }
+    }
+
+    function renderCategories() {
+      const container = document.getElementById('categoryFilters');
+      document.getElementById('allCount').textContent = allFoods.length;
+
+      categories.forEach(cat => {
+        const count = allFoods.filter(f => f.category === cat.id).length;
+        const div = document.createElement('div');
+        div.className = 'filter-option category-pill';
+        div.innerHTML = `<span>🍴 ${cat.name}</span><span class="category-count">${count}</span>`;
+        div.onclick = () => filterByCategory(cat.id, div);
+        container.appendChild(div);
+      });
+    }
+
+    function filterByCategory(catId, el) {
+      document.querySelectorAll('#categoryFilters .filter-option').forEach(f => f.classList.remove('active'));
+      el.classList.add('active');
+      activeCategory = catId;
+      applyFilters();
+    }
+
+    function filterByStatus(status, el) {
+      document.querySelectorAll('.filter-card:last-child .filter-option').forEach(f => f.classList.remove('active'));
+      el.classList.add('active');
+      activeStatus = status;
+      applyFilters();
+    }
+
+    function toggleVeg() {
+      vegOnly = !vegOnly;
+      const toggle = document.getElementById('vegToggle');
+      toggle.classList.toggle('on', vegOnly);
+      applyFilters();
+    }
+
+    function filterFoods() {
+      searchQuery = document.getElementById('searchInput').value.toLowerCase();
+      applyFilters();
+    }
+
+    function sortFoods() {
+      applyFilters();
+    }
+
+    function applyFilters() {
+      filteredFoods = [...allFoods];
+
+      if (activeCategory !== 'all') {
+        filteredFoods = filteredFoods.filter(f => f.category === activeCategory);
+      }
+      if (activeStatus !== 'all') {
+        filteredFoods = filteredFoods.filter(f => f.status === activeStatus);
+      }
+      if (vegOnly) {
+        filteredFoods = filteredFoods.filter(f => f.is_veg);
+      }
+      if (searchQuery) {
+        filteredFoods = filteredFoods.filter(f =>
+          f.name.toLowerCase().includes(searchQuery) ||
+          f.description.toLowerCase().includes(searchQuery)
+        );
+      }
+
+      const sort = document.getElementById('sortSelect').value;
+      if (sort === 'price_low') filteredFoods.sort((a, b) => a.final_price - b.final_price);
+      if (sort === 'price_high') filteredFoods.sort((a, b) => b.final_price - a.final_price);
+      if (sort === 'rating') filteredFoods.sort((a, b) => b.rating - a.rating);
+      if (sort === 'popular') filteredFoods.sort((a, b) => b.total_orders - a.total_orders);
+
+      renderMenu();
+    }
+
+    function renderMenu() {
+      const grid = document.getElementById('menuGrid');
+      document.getElementById('resultsCount').textContent = `${filteredFoods.length} items found`;
+
+      if (filteredFoods.length === 0) {
+        grid.innerHTML = `
+          <div class="empty-state" style="grid-column:1/-1;">
+            <div class="empty-state-icon">🔍</div>
+            <div class="empty-state-title">No items found</div>
+            <p>Try different filters or search terms</p>
+          </div>`;
+        return;
+      }
+      grid.innerHTML = filteredFoods.map(item => createFoodCard(item)).join('');
+    }
+
+    // Check for rescue filter from URL
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('type') === 'rescue') {
+      activeStatus = 'rescue';
+    }
+
+    loadMenu();
+  </script>
+</body>
+</html>

@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cart — FreshPlate</title>
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    .cart-page {
+      margin-top: 70px;
+      padding: 3rem 0;
+      min-height: calc(100vh - 70px);
+      background: var(--bg);
+    }
+
+    .cart-layout {
+      display: grid;
+      grid-template-columns: 1fr 380px;
+      gap: 2rem;
+      align-items: start;
+    }
+
+    .cart-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1.5rem;
+    }
+
+    .cart-title {
+      font-size: 1.8rem;
+      font-weight: 700;
+    }
+
+    /* ORDER SUMMARY */
+    .order-summary {
+      background: white;
+      border-radius: var(--radius-lg);
+      padding: 1.5rem;
+      border: 1px solid var(--border);
+      position: sticky;
+      top: 90px;
+    }
+
+    .summary-title {
+      font-size: 1.2rem;
+      font-weight: 700;
+      margin-bottom: 1.5rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .summary-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.85rem;
+      font-size: 0.95rem;
+    }
+
+    .summary-row.total {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--primary);
+      padding-top: 1rem;
+      border-top: 1px solid var(--border);
+      margin-top: 0.5rem;
+    }
+
+    .summary-label {
+      color: var(--text-secondary);
+    }
+
+    .delivery-note {
+      background: rgba(6,214,160,0.08);
+      border: 1px solid rgba(6,214,160,0.2);
+      border-radius: var(--radius-sm);
+      padding: 0.75rem 1rem;
+      font-size: 0.85rem;
+      color: #047857;
+      margin: 1rem 0;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    /* CHECKOUT MODAL */
+    .payment-options {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.75rem;
+      margin-bottom: 1rem;
+    }
+
+    .payment-option {
+      border: 2px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 1rem;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .payment-option:hover {
+      border-color: var(--primary);
+    }
+
+    .payment-option.selected {
+      border-color: var(--primary);
+      background: rgba(255,107,53,0.06);
+    }
+
+    .payment-option-icon {
+      font-size: 1.8rem;
+      margin-bottom: 0.4rem;
+    }
+
+    .payment-option-label {
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--text-secondary);
+    }
+
+    .payment-option.selected .payment-option-label {
+      color: var(--primary);
+    }
+
+    @media (max-width: 900px) {
+      .cart-layout { grid-template-columns: 1fr; }
+      .order-summary { position: static; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAVBAR -->
+  <nav class="navbar">
+    <a href="index.html" class="navbar-brand">Fresh<span>Plate</span></a>
+    <ul class="navbar-nav">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="menu.html">Menu</a></li>
+      <li><a href="donation.html">Donate Food</a></li>
+      <li><a href="chatbot.html">AI Assistant</a></li>
+      <li><a href="orders.html">My Orders</a></li>
+    </ul>
+    <div class="navbar-actions"></div>
+    <div class="hamburger"><span></span><span></span><span></span></div>
+  </nav>
+
+  <div class="cart-page">
+    <div class="container">
+      <div class="cart-layout">
+
+        <!-- CART ITEMS -->
+        <div>
+          <div class="cart-header">
+            <h1 class="cart-title">🛒 My Cart</h1>
+            <button class="btn btn-ghost btn-sm" onclick="clearCart()">Clear All</button>
+          </div>
+          <div id="cartItems">
+            <div class="loading-container"><div class="spinner"></div></div>
+          </div>
+        </div>
+
+        <!-- ORDER SUMMARY -->
+        <div class="order-summary">
+          <div class="summary-title">📋 Order Summary</div>
+
+          <div class="summary-row">
+            <span class="summary-label">Subtotal</span>
+            <span id="subtotal">₹0.00</span>
+          </div>
+          <div class="summary-row">
+            <span class="summary-label">Delivery Charge</span>
+            <span>₹40.00</span>
+          </div>
+          <div class="summary-row">
+            <span class="summary-label">Discount</span>
+            <span style="color:var(--success)">- ₹0.00</span>
+          </div>
+          <div class="summary-row total">
+            <span>Total</span>
+            <span id="totalAmount">₹40.00</span>
+          </div>
+
+          <div class="delivery-note">
+            ✅ Free delivery on orders above ₹500!
+          </div>
+
+          <button class="btn btn-primary btn-lg btn-block" onclick="openCheckout()" id="checkoutBtn">
+            Proceed to Checkout →
+          </button>
+
+          <a href="menu.html" class="btn btn-ghost btn-block" style="margin-top:0.75rem;text-align:center;">
+            ← Continue Shopping
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CHECKOUT MODAL -->
+  <div class="modal-overlay" id="checkoutModal">
+    <div class="modal" style="max-width:550px;">
+      <div class="modal-header">
+        <h2 class="modal-title">🏠 Checkout</h2>
+        <button class="modal-close" onclick="closeCheckout()">×</button>
+      </div>
+
+      <div id="checkoutAlert"></div>
+
+      <div class="form-group">
+        <label class="form-label">Delivery Address *</label>
+        <textarea id="deliveryAddress" class="form-control" rows="3"
+          placeholder="Enter your full delivery address..."></textarea>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Payment Method</label>
+        <div class="payment-options">
+          <div class="payment-option selected" onclick="selectPayment('cod', this)">
+            <div class="payment-option-icon">💵</div>
+            <div class="payment-option-label">Cash on Delivery</div>
+          </div>
+          <div class="payment-option" onclick="selectPayment('online', this)">
+            <div class="payment-option-icon">💳</div>
+            <div class="payment-option-label">Online Payment</div>
+          </div>
+        </div>
+        <input type="hidden" id="paymentMethod" value="cod">
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Special Instructions (Optional)</label>
+        <textarea id="specialInstructions" class="form-control" rows="2"
+          placeholder="Any special requests or instructions..."></textarea>
+      </div>
+
+      <div style="background:var(--bg);border-radius:var(--radius-sm);padding:1rem;margin-bottom:1.5rem;">
+        <div class="summary-row">
+          <span class="summary-label">Items Total</span>
+          <span id="modalSubtotal">₹0.00</span>
+        </div>
+        <div class="summary-row">
+          <span class="summary-label">Delivery</span>
+          <span>₹40.00</span>
+        </div>
+        <div class="summary-row total" style="margin-bottom:0;">
+          <span>Grand Total</span>
+          <span id="modalTotal">₹40.00</span>
+        </div>
+      </div>
+
+      <button class="btn btn-primary btn-lg btn-block" onclick="placeOrder()" id="placeOrderBtn">
+        🎉 Place Order
+      </button>
+    </div>
+  </div>
+
+  <script src="javascript/main.js"></script>
+  <script>
+    let cartData = null;
+
+    if (!Auth.isLoggedIn()) {
+      window.location.href = 'login.html';
+    }
+
+    async function loadCart() {
+      try {
+        cartData = await Api.get('/orders/cart/');
+        renderCart();
+      } catch (e) {
+        document.getElementById('cartItems').innerHTML = `
+          <div class="empty-state">
+            <div class="empty-state-icon">😕</div>
+            <div class="empty-state-title">Could not load cart</div>
+          </div>`;
+      }
+    }
+
+    function renderCart() {
+      const container = document.getElementById('cartItems');
+
+      if (!cartData || cartData.cart_items.length === 0) {
+        container.innerHTML = `
+          <div class="empty-state">
+            <div class="empty-state-icon">🛒</div>
+            <div class="empty-state-title">Your cart is empty</div>
+            <p style="margin-bottom:1.5rem;">Add some delicious items from our menu!</p>
+            <a href="menu.html" class="btn btn-primary">Browse Menu</a>
+          </div>`;
+        document.getElementById('checkoutBtn').disabled = true;
+        return;
+      }
+
+      container.innerHTML = cartData.cart_items.map(item => `
+        <div class="cart-item" id="cartItem-${item.id}">
+          <div class="cart-item-img">
+            ${item.food_item.image
+              ? `<img src="${item.food_item.image}" alt="${item.food_item.name}" style="width:100%;height:100%;object-fit:cover;border-radius:var(--radius-sm);">`
+              : '🍽️'}
+          </div>
+          <div class="cart-item-info">
+            <div class="cart-item-name">${item.food_item.name}</div>
+            <div style="font-size:0.82rem;color:var(--text-muted);margin-bottom:0.4rem;">
+              ${item.food_item.is_veg ? '🟢 Veg' : '🔴 Non-Veg'} • ⏱️ ${item.food_item.preparation_time} min
+            </div>
+            <div class="cart-item-price">${formatPrice(item.subtotal)}</div>
+          </div>
+          <div style="display:flex;flex-direction:column;align-items:flex-end;gap:0.75rem;">
+            <div class="quantity-control">
+              <button class="quantity-btn" onclick="updateQuantity(${item.id}, ${item.quantity - 1})">−</button>
+              <span class="quantity-value">${item.quantity}</span>
+              <button class="quantity-btn" onclick="updateQuantity(${item.id}, ${item.quantity + 1})">+</button>
+            </div>
+            <button class="btn btn-ghost btn-sm" style="color:var(--danger);" onclick="removeItem(${item.id})">
+              🗑️ Remove
+            </button>
+          </div>
+        </div>
+      `).join('');
+
+      updateSummary();
+    }
+
+    function updateSummary() {
+      const subtotal = parseFloat(cartData.total_price) || 0;
+      const delivery = 40;
+      const total = subtotal + delivery;
+
+      document.getElementById('subtotal').textContent = formatPrice(subtotal);
+      document.getElementById('totalAmount').textContent = formatPrice(total);
+      document.getElementById('modalSubtotal').textContent = formatPrice(subtotal);
+      document.getElementById('modalTotal').textContent = formatPrice(total);
+    }
+
+    async function updateQuantity(itemId, newQty) {
+      try {
+        await Api.patch(`/orders/cart/item/${itemId}/`, { quantity: newQty });
+        await loadCart();
+        updateCartCount();
+      } catch (e) {
+        showToast('Failed to update quantity', 'error');
+      }
+    }
+
+    async function removeItem(itemId) {
+      try {
+        await Api.delete(`/orders/cart/item/${itemId}/`);
+        showToast('Item removed from cart');
+        await loadCart();
+        updateCartCount();
+      } catch (e) {
+        showToast('Failed to remove item', 'error');
+      }
+    }
+
+    async function clearCart() {
+      if (!confirm('Clear all items from cart?')) return;
+      try {
+        await Api.delete('/orders/cart/');
+        showToast('Cart cleared!');
+        await loadCart();
+        updateCartCount();
+      } catch (e) {
+        showToast('Failed to clear cart', 'error');
+      }
+    }
+
+    function openCheckout() {
+      if (!cartData || cartData.cart_items.length === 0) {
+        showToast('Cart is empty!', 'warning');
+        return;
+      }
+      const user = Auth.getUser();
+      if (user?.address) {
+        document.getElementById('deliveryAddress').value = user.address;
+      }
+      document.getElementById('checkoutModal').classList.add('active');
+    }
+
+    function closeCheckout() {
+      document.getElementById('checkoutModal').classList.remove('active');
+    }
+
+    function selectPayment(method, el) {
+      document.querySelectorAll('.payment-option').forEach(p => p.classList.remove('selected'));
+      el.classList.add('selected');
+      document.getElementById('paymentMethod').value = method;
+    }
+
+    async function placeOrder() {
+      const address = document.getElementById('deliveryAddress').value.trim();
+      if (!address) {
+        document.getElementById('checkoutAlert').innerHTML = `
+          <div class="alert alert-danger">❌ Please enter delivery address</div>`;
+        return;
+      }
+
+      const btn = document.getElementById('placeOrderBtn');
+      btn.textContent = 'Placing Order...';
+      btn.disabled = true;
+
+      try {
+        const data = await Api.post('/orders/place/', {
+          delivery_address: address,
+          payment_method: document.getElementById('paymentMethod').value,
+          special_instructions: document.getElementById('specialInstructions').value,
+        });
+
+        closeCheckout();
+        showToast('Order placed successfully! 🎉');
+        setTimeout(() => window.location.href = 'orders.html', 1500);
+      } catch (e) {
+        document.getElementById('checkoutAlert').innerHTML = `
+          <div class="alert alert-danger">❌ Failed to place order. Please try again.</div>`;
+        btn.textContent = '🎉 Place Order';
+        btn.disabled = false;
+      }
+    }
+
+    // Close modal on overlay click
+    document.getElementById('checkoutModal').addEventListener('click', function(e) {
+      if (e.target === this) closeCheckout();
+    });
+
+    loadCart();
+  </script>
+</body>
+</html>

@@ -1,0 +1,872 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard — FreshPlate</title>
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    .dashboard-page {
+      margin-top: 70px;
+      min-height: calc(100vh - 70px);
+      display: grid;
+      grid-template-columns: 240px 1fr;
+    }
+
+    /* SIDEBAR */
+    .dash-sidebar {
+      background: var(--secondary);
+      color: white;
+      padding: 1.5rem 0;
+      position: sticky;
+      top: 70px;
+      height: calc(100vh - 70px);
+      overflow-y: auto;
+    }
+
+    .dash-sidebar-brand {
+      padding: 0 1.5rem 1.5rem;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+      margin-bottom: 1rem;
+    }
+
+    .dash-sidebar-brand h2 {
+      font-size: 1.2rem;
+      color: white;
+    }
+
+    .dash-sidebar-brand p {
+      font-size: 0.8rem;
+      color: rgba(255,255,255,0.5);
+      margin-top: 0.2rem;
+    }
+
+    .dash-nav {
+      list-style: none;
+      padding: 0 0.75rem;
+    }
+
+    .dash-nav-item {
+      padding: 0.75rem 1rem;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      font-size: 0.9rem;
+      color: rgba(255,255,255,0.7);
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 0.25rem;
+    }
+
+    .dash-nav-item:hover {
+      background: rgba(255,255,255,0.08);
+      color: white;
+    }
+
+    .dash-nav-item.active {
+      background: var(--primary);
+      color: white;
+    }
+
+    .dash-nav-section {
+      padding: 0.75rem 1.5rem 0.4rem;
+      font-size: 0.72rem;
+      color: rgba(255,255,255,0.35);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-top: 0.75rem;
+    }
+
+    /* MAIN */
+    .dash-main {
+      background: var(--bg);
+      overflow-y: auto;
+    }
+
+    .dash-header {
+      background: white;
+      padding: 1.25rem 2rem;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .dash-header-title {
+      font-size: 1.3rem;
+      font-weight: 700;
+    }
+
+    .dash-content {
+      padding: 2rem;
+    }
+
+    /* STAT CARDS */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1.25rem;
+      margin-bottom: 2rem;
+    }
+
+    .stat-card {
+      background: white;
+      border-radius: var(--radius-md);
+      padding: 1.5rem;
+      border: 1px solid var(--border);
+      transition: all 0.3s;
+    }
+
+    .stat-card:hover {
+      box-shadow: var(--shadow-md);
+      transform: translateY(-2px);
+    }
+
+    .stat-icon {
+      font-size: 2rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .stat-value {
+      font-family: 'Playfair Display', serif;
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--primary);
+      margin-bottom: 0.25rem;
+    }
+
+    .stat-label {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    .stat-change {
+      font-size: 0.78rem;
+      color: var(--success);
+      margin-top: 0.4rem;
+    }
+
+    /* TABLES */
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.9rem;
+    }
+
+    .data-table th {
+      text-align: left;
+      padding: 0.85rem 1rem;
+      background: var(--bg);
+      color: var(--text-secondary);
+      font-weight: 600;
+      font-size: 0.82rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .data-table td {
+      padding: 0.9rem 1rem;
+      border-bottom: 1px solid var(--border);
+      color: var(--text-primary);
+      vertical-align: middle;
+    }
+
+    .data-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    .data-table tr:hover td {
+      background: rgba(255,107,53,0.02);
+    }
+
+    .table-card {
+      background: white;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border);
+      overflow: hidden;
+      margin-bottom: 2rem;
+    }
+
+    .table-card-header {
+      padding: 1.25rem 1.5rem;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .table-card-title {
+      font-weight: 700;
+      font-size: 1rem;
+    }
+
+    /* STATUS SELECT */
+    .status-select {
+      padding: 0.35rem 0.75rem;
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-sm);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.82rem;
+      outline: none;
+      cursor: pointer;
+      background: white;
+    }
+
+    /* SECTION TABS */
+    .section-tabs {
+      display: none;
+    }
+
+    .section-tabs.active {
+      display: block;
+    }
+
+    /* ADD FOOD MODAL */
+    .form-row-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+
+    @media (max-width: 1024px) {
+      .stats-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    @media (max-width: 768px) {
+      .dashboard-page { grid-template-columns: 1fr; }
+      .dash-sidebar {
+        position: static;
+        height: auto;
+        display: flex;
+        overflow-x: auto;
+        padding: 0.75rem;
+      }
+      .dash-sidebar-brand { display: none; }
+      .dash-nav {
+        display: flex;
+        padding: 0;
+        gap: 0.4rem;
+      }
+      .dash-nav-section { display: none; }
+      .dash-nav-item { white-space: nowrap; margin-bottom: 0; }
+      .stats-grid { grid-template-columns: repeat(2, 1fr); }
+      .dash-content { padding: 1rem; }
+      .form-row-2 { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAVBAR -->
+  <nav class="navbar">
+    <a href="index.html" class="navbar-brand">Fresh<span>Plate</span></a>
+    <ul class="navbar-nav">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="menu.html">Menu</a></li>
+    </ul>
+    <div class="navbar-actions"></div>
+    <div class="hamburger"><span></span><span></span><span></span></div>
+  </nav>
+
+  <div class="dashboard-page">
+
+    <!-- SIDEBAR -->
+    <div class="dash-sidebar">
+      <div class="dash-sidebar-brand">
+        <h2>🛡️ Admin Panel</h2>
+        <p id="adminName">Loading...</p>
+      </div>
+      <div class="dash-nav-section">Main</div>
+      <ul class="dash-nav">
+        <li class="dash-nav-item active" onclick="showSection('overview', this)">📊 Overview</li>
+        <li class="dash-nav-item" onclick="showSection('orders', this)">📦 Orders</li>
+        <li class="dash-nav-item" onclick="showSection('donations', this)">🤝 Donations</li>
+        <div class="dash-nav-section">Manage</div>
+        <li class="dash-nav-item" onclick="showSection('food', this)">🍽️ Food Items</li>
+        <li class="dash-nav-item" onclick="showSection('users', this)">👥 Users</li>
+        <div class="dash-nav-section">Actions</div>
+        <li class="dash-nav-item" onclick="window.location.href='index.html'">🏠 View Site</li>
+        <li class="dash-nav-item" onclick="logout()" style="color:rgba(239,71,111,0.8);">🚪 Logout</li>
+      </ul>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div class="dash-main">
+      <div class="dash-header">
+        <div class="dash-header-title" id="sectionTitle">📊 Overview</div>
+        <div style="font-size:0.85rem;color:var(--text-muted);" id="currentDate"></div>
+      </div>
+
+      <div class="dash-content">
+
+        <!-- OVERVIEW -->
+        <div class="section-tabs active" id="section-overview">
+          <div class="stats-grid">
+            <div class="stat-card">
+              <div class="stat-icon">📦</div>
+              <div class="stat-value" id="totalOrders">-</div>
+              <div class="stat-label">Total Orders</div>
+              <div class="stat-change">↑ All time</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon">👥</div>
+              <div class="stat-value" id="totalUsers">-</div>
+              <div class="stat-label">Total Users</div>
+              <div class="stat-change">↑ Registered</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon">🤝</div>
+              <div class="stat-value" id="totalDonations">-</div>
+              <div class="stat-label">Donations</div>
+              <div class="stat-change">↑ Submitted</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon">🍽️</div>
+              <div class="stat-value" id="totalFoodItems">-</div>
+              <div class="stat-label">Food Items</div>
+              <div class="stat-change">↑ In menu</div>
+            </div>
+          </div>
+
+          <!-- RECENT ORDERS -->
+          <div class="table-card">
+            <div class="table-card-header">
+              <div class="table-card-title">📦 Recent Orders</div>
+              <button class="btn btn-ghost btn-sm" onclick="showSection('orders', document.querySelector('[onclick*=\"orders\"]'))">View All</button>
+            </div>
+            <div style="overflow-x:auto;">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Order ID</th>
+                    <th>Customer</th>
+                    <th>Amount</th>
+                    <th>Payment</th>
+                    <th>Status</th>
+                    <th>Date</th>
+                  </tr>
+                </thead>
+                <tbody id="recentOrdersTable">
+                  <tr><td colspan="6" style="text-align:center;padding:2rem;color:var(--text-muted);">Loading...</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- RECENT DONATIONS -->
+          <div class="table-card">
+            <div class="table-card-header">
+              <div class="table-card-title">🤝 Recent Donations</div>
+            </div>
+            <div style="overflow-x:auto;">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Food Name</th>
+                    <th>Donor</th>
+                    <th>Quantity</th>
+                    <th>Type</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody id="recentDonationsTable">
+                  <tr><td colspan="6" style="text-align:center;padding:2rem;color:var(--text-muted);">Loading...</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- ORDERS -->
+        <div class="section-tabs" id="section-orders">
+          <div class="table-card">
+            <div class="table-card-header">
+              <div class="table-card-title">📦 All Orders</div>
+              <select class="status-select" onchange="filterOrdersAdmin(this.value)">
+                <option value="all">All Status</option>
+                <option value="pending">Pending</option>
+                <option value="confirmed">Confirmed</option>
+                <option value="preparing">Preparing</option>
+                <option value="out_for_delivery">Out for Delivery</option>
+                <option value="delivered">Delivered</option>
+                <option value="cancelled">Cancelled</option>
+              </select>
+            </div>
+            <div style="overflow-x:auto;">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Order ID</th>
+                    <th>Customer</th>
+                    <th>Items</th>
+                    <th>Amount</th>
+                    <th>Payment</th>
+                    <th>Status</th>
+                    <th>Update</th>
+                  </tr>
+                </thead>
+                <tbody id="allOrdersTable">
+                  <tr><td colspan="7" style="text-align:center;padding:2rem;color:var(--text-muted);">Loading...</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- DONATIONS -->
+        <div class="section-tabs" id="section-donations">
+          <div class="table-card">
+            <div class="table-card-header">
+              <div class="table-card-title">🤝 All Donations</div>
+            </div>
+            <div style="overflow-x:auto;">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Food</th>
+                    <th>Donor</th>
+                    <th>Quantity</th>
+                    <th>Pickup Time</th>
+                    <th>Status</th>
+                    <th>Update</th>
+                  </tr>
+                </thead>
+                <tbody id="allDonationsTable">
+                  <tr><td colspan="6" style="text-align:center;padding:2rem;color:var(--text-muted);">Loading...</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- FOOD ITEMS -->
+        <div class="section-tabs" id="section-food">
+          <div style="display:flex;justify-content:flex-end;margin-bottom:1rem;">
+            <button class="btn btn-primary" onclick="openAddFoodModal()">+ Add Food Item</button>
+          </div>
+          <div class="table-card">
+            <div class="table-card-header">
+              <div class="table-card-title">🍽️ Food Items</div>
+            </div>
+            <div style="overflow-x:auto;">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Name</th>
+                    <th>Category</th>
+                    <th>Price</th>
+                    <th>Type</th>
+                    <th>Status</th>
+                    <th>Orders</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody id="foodItemsTable">
+                  <tr><td colspan="7" style="text-align:center;padding:2rem;color:var(--text-muted);">Loading...</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- USERS -->
+        <div class="section-tabs" id="section-users">
+          <div class="table-card">
+            <div class="table-card-header">
+              <div class="table-card-title">👥 All Users</div>
+            </div>
+            <div style="overflow-x:auto;">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Phone</th>
+                    <th>Role</th>
+                    <th>Joined</th>
+                  </tr>
+                </thead>
+                <tbody id="usersTable">
+                  <tr><td colspan="5" style="text-align:center;padding:2rem;color:var(--text-muted);">Loading...</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ADD FOOD MODAL -->
+  <div class="modal-overlay" id="addFoodModal">
+    <div class="modal" style="max-width:600px;max-height:90vh;overflow-y:auto;">
+      <div class="modal-header">
+        <h2 class="modal-title">🍽️ Add Food Item</h2>
+        <button class="modal-close" onclick="closeAddFoodModal()">×</button>
+      </div>
+      <div id="addFoodAlert"></div>
+      <form id="addFoodForm">
+        <div class="form-row-2">
+          <div class="form-group">
+            <label class="form-label">Food Name *</label>
+            <input type="text" id="foodName" class="form-control" placeholder="e.g. Chicken Biryani" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Category *</label>
+            <select id="foodCategory" class="form-control" required>
+              <option value="">Select category...</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Description *</label>
+          <textarea id="foodDesc" class="form-control" rows="2" placeholder="Describe the dish..." required></textarea>
+        </div>
+        <div class="form-row-2">
+          <div class="form-group">
+            <label class="form-label">Price (₹) *</label>
+            <input type="number" id="foodPrice" class="form-control" placeholder="299" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Discount Price (₹)</label>
+            <input type="number" id="foodDiscountPrice" class="form-control" placeholder="Optional">
+          </div>
+        </div>
+        <div class="form-row-2">
+          <div class="form-group">
+            <label class="form-label">Prep Time (mins) *</label>
+            <input type="number" id="foodPrepTime" class="form-control" placeholder="30" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Calories</label>
+            <input type="number" id="foodCalories" class="form-control" placeholder="Optional">
+          </div>
+        </div>
+        <div class="form-row-2">
+          <div class="form-group">
+            <label class="form-label">Food Type</label>
+            <select id="foodIsVeg" class="form-control">
+              <option value="true">🟢 Vegetarian</option>
+              <option value="false">🔴 Non-Vegetarian</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Status</label>
+            <select id="foodStatus" class="form-control">
+              <option value="available">✅ Available</option>
+              <option value="unavailable">❌ Unavailable</option>
+              <option value="rescue">🤝 Rescue Food</option>
+            </select>
+          </div>
+        </div>
+        <button type="submit" class="btn btn-primary btn-lg btn-block" id="addFoodBtn">
+          Add Food Item
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <script src="javascript/main.js"></script>
+  <script>
+    if (!Auth.isLoggedIn() || !Auth.isAdmin()) {
+      window.location.href = 'login.html';
+    }
+
+    let allOrdersData = [];
+    let allDonationsData = [];
+    let categoriesData = [];
+
+    // Set date
+    document.getElementById('currentDate').textContent = new Date().toLocaleDateString('en-IN', {
+      weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
+    });
+
+    // Admin name
+    const user = Auth.getUser();
+    document.getElementById('adminName').textContent = user?.full_name || 'Admin';
+
+    function showSection(name, el) {
+      document.querySelectorAll('.section-tabs').forEach(s => s.classList.remove('active'));
+      document.getElementById(`section-${name}`).classList.add('active');
+      document.querySelectorAll('.dash-nav-item').forEach(n => n.classList.remove('active'));
+      if (el) el.classList.add('active');
+
+      const titles = {
+        overview: '📊 Overview',
+        orders: '📦 Orders',
+        donations: '🤝 Donations',
+        food: '🍽️ Food Items',
+        users: '👥 Users'
+      };
+      document.getElementById('sectionTitle').textContent = titles[name] || name;
+
+      if (name === 'orders') loadAllOrders();
+      if (name === 'donations') loadAllDonations();
+      if (name === 'food') loadFoodItems();
+      if (name === 'users') loadUsers();
+    }
+
+    async function loadOverview() {
+      try {
+        const [orders, users, donations, foods] = await Promise.all([
+          Api.get('/orders/all/'),
+          Api.get('/users/all/'),
+          Api.get('/donations/all/'),
+          Api.get('/food/items/', false),
+        ]);
+
+        document.getElementById('totalOrders').textContent = orders.length;
+        document.getElementById('totalUsers').textContent = users.length;
+        document.getElementById('totalDonations').textContent = donations.length;
+        document.getElementById('totalFoodItems').textContent = foods.length;
+
+        // Recent orders
+        const recentOrders = orders.slice(0, 5);
+        document.getElementById('recentOrdersTable').innerHTML = recentOrders.length === 0
+          ? `<tr><td colspan="6" style="text-align:center;padding:2rem;color:var(--text-muted);">No orders yet</td></tr>`
+          : recentOrders.map(o => `
+            <tr>
+              <td><strong>#${o.id}</strong></td>
+              <td>${o.user_name}</td>
+              <td>${formatPrice(o.total_amount)}</td>
+              <td>${o.payment_method === 'cod' ? '💵 COD' : '💳 Online'}</td>
+              <td>${getStatusBadge(o.status)}</td>
+              <td>${formatDate(o.ordered_at)}</td>
+            </tr>
+          `).join('');
+
+        // Recent donations
+        const recentDonations = donations.slice(0, 5);
+        document.getElementById('recentDonationsTable').innerHTML = recentDonations.length === 0
+          ? `<tr><td colspan="6" style="text-align:center;padding:2rem;color:var(--text-muted);">No donations yet</td></tr>`
+          : recentDonations.map(d => `
+            <tr>
+              <td><strong>${d.food_name}</strong></td>
+              <td>${d.donor_name}</td>
+              <td>${d.quantity}</td>
+              <td>${d.food_type.replace('_', ' ')}</td>
+              <td>${getDonationBadge(d.status)}</td>
+              <td>
+                <select class="status-select" onchange="updateDonationStatus(${d.id}, this.value)">
+                  <option value="pending" ${d.status === 'pending' ? 'selected' : ''}>Pending</option>
+                  <option value="approved" ${d.status === 'approved' ? 'selected' : ''}>Approved</option>
+                  <option value="picked_up" ${d.status === 'picked_up' ? 'selected' : ''}>Picked Up</option>
+                  <option value="distributed" ${d.status === 'distributed' ? 'selected' : ''}>Distributed</option>
+                  <option value="rejected" ${d.status === 'rejected' ? 'selected' : ''}>Rejected</option>
+                </select>
+              </td>
+            </tr>
+          `).join('');
+
+      } catch (e) {
+        showToast('Failed to load dashboard data', 'error');
+      }
+    }
+
+    async function loadAllOrders() {
+      try {
+        allOrdersData = await Api.get('/orders/all/');
+        renderOrdersTable(allOrdersData);
+      } catch (e) {
+        showToast('Failed to load orders', 'error');
+      }
+    }
+
+    function filterOrdersAdmin(status) {
+      const filtered = status === 'all' ? allOrdersData : allOrdersData.filter(o => o.status === status);
+      renderOrdersTable(filtered);
+    }
+
+    function renderOrdersTable(orders) {
+      document.getElementById('allOrdersTable').innerHTML = orders.length === 0
+        ? `<tr><td colspan="7" style="text-align:center;padding:2rem;color:var(--text-muted);">No orders found</td></tr>`
+        : orders.map(o => `
+          <tr>
+            <td><strong>#${o.id}</strong></td>
+            <td>${o.user_name}</td>
+            <td>${o.order_items.length} items</td>
+            <td>${formatPrice(o.total_amount)}</td>
+            <td>${o.payment_method === 'cod' ? '💵 COD' : '💳 Online'}</td>
+            <td>${getStatusBadge(o.status)}</td>
+            <td>
+              <select class="status-select" onchange="updateOrderStatus(${o.id}, this.value)">
+                <option value="pending" ${o.status === 'pending' ? 'selected' : ''}>Pending</option>
+                <option value="confirmed" ${o.status === 'confirmed' ? 'selected' : ''}>Confirmed</option>
+                <option value="preparing" ${o.status === 'preparing' ? 'selected' : ''}>Preparing</option>
+                <option value="out_for_delivery" ${o.status === 'out_for_delivery' ? 'selected' : ''}>Out for Delivery</option>
+                <option value="delivered" ${o.status === 'delivered' ? 'selected' : ''}>Delivered</option>
+                <option value="cancelled" ${o.status === 'cancelled' ? 'selected' : ''}>Cancelled</option>
+              </select>
+            </td>
+          </tr>
+        `).join('');
+    }
+
+    async function updateOrderStatus(orderId, status) {
+      try {
+        await Api.patch(`/orders/${orderId}/status/`, { status });
+        showToast(`Order #${orderId} updated to ${status}`);
+      } catch (e) {
+        showToast('Failed to update order status', 'error');
+      }
+    }
+
+    async function loadAllDonations() {
+      try {
+        allDonationsData = await Api.get('/donations/all/');
+        document.getElementById('allDonationsTable').innerHTML = allDonationsData.length === 0
+          ? `<tr><td colspan="6" style="text-align:center;padding:2rem;color:var(--text-muted);">No donations yet</td></tr>`
+          : allDonationsData.map(d => `
+            <tr>
+              <td><strong>${d.food_name}</strong></td>
+              <td>${d.donor_name}</td>
+              <td>${d.quantity}</td>
+              <td>${formatDate(d.pickup_time)}</td>
+              <td>${getDonationBadge(d.status)}</td>
+              <td>
+                <select class="status-select" onchange="updateDonationStatus(${d.id}, this.value)">
+                  <option value="pending" ${d.status === 'pending' ? 'selected' : ''}>Pending</option>
+                  <option value="approved" ${d.status === 'approved' ? 'selected' : ''}>Approved</option>
+                  <option value="picked_up" ${d.status === 'picked_up' ? 'selected' : ''}>Picked Up</option>
+                  <option value="distributed" ${d.status === 'distributed' ? 'selected' : ''}>Distributed</option>
+                  <option value="rejected" ${d.status === 'rejected' ? 'selected' : ''}>Rejected</option>
+                </select>
+              </td>
+            </tr>
+          `).join('');
+      } catch (e) {
+        showToast('Failed to load donations', 'error');
+      }
+    }
+
+    async function updateDonationStatus(donationId, status) {
+      try {
+        await Api.patch(`/donations/${donationId}/status/`, { status });
+        showToast(`Donation updated to ${status}`);
+      } catch (e) {
+        showToast('Failed to update donation status', 'error');
+      }
+    }
+
+    async function loadFoodItems() {
+      try {
+        const [foods, cats] = await Promise.all([
+          Api.get('/food/items/', false),
+          Api.get('/food/categories/', false),
+        ]);
+        categoriesData = cats;
+
+        document.getElementById('foodItemsTable').innerHTML = foods.length === 0
+          ? `<tr><td colspan="7" style="text-align:center;padding:2rem;color:var(--text-muted);">No food items yet</td></tr>`
+          : foods.map(f => `
+            <tr>
+              <td><strong>${f.name}</strong></td>
+              <td>${f.category_name}</td>
+              <td>${formatPrice(f.final_price)}</td>
+              <td>${f.is_veg ? '🟢 Veg' : '🔴 Non-Veg'}</td>
+              <td>${f.status === 'available' ? '<span class="badge badge-success">Available</span>' : f.status === 'rescue' ? '<span class="badge badge-warning">Rescue</span>' : '<span class="badge badge-danger">Unavailable</span>'}</td>
+              <td>${f.total_orders}</td>
+              <td>
+                <button class="btn btn-danger btn-sm" onclick="deleteFoodItem(${f.id})">Delete</button>
+              </td>
+            </tr>
+          `).join('');
+      } catch (e) {
+        showToast('Failed to load food items', 'error');
+      }
+    }
+
+    async function deleteFoodItem(id) {
+      if (!confirm('Delete this food item?')) return;
+      try {
+        await Api.delete(`/food/items/${id}/update/`);
+        showToast('Food item deleted');
+        loadFoodItems();
+      } catch (e) {
+        showToast('Failed to delete item', 'error');
+      }
+    }
+
+    async function loadUsers() {
+      try {
+        const users = await Api.get('/users/all/');
+        document.getElementById('usersTable').innerHTML = users.length === 0
+          ? `<tr><td colspan="5" style="text-align:center;padding:2rem;color:var(--text-muted);">No users yet</td></tr>`
+          : users.map(u => `
+            <tr>
+              <td><strong>${u.full_name}</strong></td>
+              <td>${u.email}</td>
+              <td>${u.phone || '-'}</td>
+              <td>
+                ${u.role === 'admin' ? '<span class="badge badge-danger">Admin</span>' :
+                  u.role === 'donor' ? '<span class="badge badge-success">Donor</span>' :
+                  '<span class="badge badge-info">Customer</span>'}
+              </td>
+              <td>${formatDate(u.created_at)}</td>
+            </tr>
+          `).join('');
+      } catch (e) {
+        showToast('Failed to load users', 'error');
+      }
+    }
+
+    function openAddFoodModal() {
+      // Load categories into select
+      const select = document.getElementById('foodCategory');
+      select.innerHTML = '<option value="">Select category...</option>';
+      categoriesData.forEach(c => {
+        select.innerHTML += `<option value="${c.id}">${c.name}</option>`;
+      });
+      document.getElementById('addFoodModal').classList.add('active');
+    }
+
+    function closeAddFoodModal() {
+      document.getElementById('addFoodModal').classList.remove('active');
+    }
+
+    document.getElementById('addFoodForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const btn = document.getElementById('addFoodBtn');
+      btn.textContent = 'Adding...';
+      btn.disabled = true;
+
+      const payload = {
+        name: document.getElementById('foodName').value,
+        category: document.getElementById('foodCategory').value,
+        description: document.getElementById('foodDesc').value,
+        price: document.getElementById('foodPrice').value,
+        discount_price: document.getElementById('foodDiscountPrice').value || null,
+        preparation_time: document.getElementById('foodPrepTime').value,
+        calories: document.getElementById('foodCalories').value || null,
+        is_veg: document.getElementById('foodIsVeg').value === 'true',
+        status: document.getElementById('foodStatus').value,
+        is_available: true,
+      };
+
+      try {
+        await Api.post('/food/items/create/', payload);
+        showToast('Food item added successfully!');
+        closeAddFoodModal();
+        document.getElementById('addFoodForm').reset();
+        loadFoodItems();
+      } catch (e) {
+        document.getElementById('addFoodAlert').innerHTML = `
+          <div class="alert alert-danger">❌ Failed to add food item. Check all fields.</div>`;
+      } finally {
+        btn.textContent = 'Add Food Item';
+        btn.disabled = false;
+      }
+    });
+
+    document.getElementById('addFoodModal').addEventListener('click', function(e) {
+      if (e.target === this) closeAddFoodModal();
+    });
+
+    loadOverview();
+  </script>
+</body>
+</html>

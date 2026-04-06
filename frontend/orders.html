@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Orders — FreshPlate</title>
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    .orders-page {
+      margin-top: 70px;
+      padding: 3rem 0;
+      min-height: calc(100vh - 70px);
+    }
+
+    .orders-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 2rem;
+    }
+
+    .orders-title {
+      font-size: 2rem;
+      font-weight: 700;
+    }
+
+    .order-card {
+      background: white;
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--border);
+      margin-bottom: 1.5rem;
+      overflow: hidden;
+      transition: box-shadow 0.3s;
+    }
+
+    .order-card:hover {
+      box-shadow: var(--shadow-md);
+    }
+
+    .order-card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1.25rem 1.5rem;
+      background: var(--bg);
+      border-bottom: 1px solid var(--border);
+      flex-wrap: wrap;
+      gap: 0.75rem;
+    }
+
+    .order-id {
+      font-weight: 700;
+      font-size: 1rem;
+    }
+
+    .order-date {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    .order-card-body {
+      padding: 1.5rem;
+    }
+
+    .order-items-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      margin-bottom: 1.25rem;
+    }
+
+    .order-item-row {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .order-item-emoji {
+      width: 44px;
+      height: 44px;
+      background: var(--bg);
+      border-radius: var(--radius-sm);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.3rem;
+      flex-shrink: 0;
+    }
+
+    .order-item-name {
+      flex: 1;
+      font-weight: 500;
+      font-size: 0.95rem;
+    }
+
+    .order-item-qty {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    .order-item-price {
+      font-weight: 600;
+      color: var(--primary);
+    }
+
+    .order-card-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-top: 1.25rem;
+      border-top: 1px solid var(--border);
+      flex-wrap: wrap;
+      gap: 0.75rem;
+    }
+
+    .order-total {
+      font-size: 1.1rem;
+      font-weight: 700;
+    }
+
+    .order-total span {
+      color: var(--primary);
+    }
+
+    /* STATUS TRACKER */
+    .status-tracker {
+      display: flex;
+      align-items: center;
+      gap: 0;
+      margin: 1.25rem 0;
+      overflow-x: auto;
+      padding-bottom: 0.5rem;
+    }
+
+    .tracker-step {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      flex: 1;
+      min-width: 80px;
+      position: relative;
+    }
+
+    .tracker-step::after {
+      content: '';
+      position: absolute;
+      top: 18px;
+      left: 50%;
+      right: -50%;
+      height: 2px;
+      background: var(--border);
+      z-index: 0;
+    }
+
+    .tracker-step:last-child::after {
+      display: none;
+    }
+
+    .tracker-step.done::after {
+      background: var(--success);
+    }
+
+    .tracker-step.active::after {
+      background: linear-gradient(90deg, var(--primary), var(--border));
+    }
+
+    .tracker-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: white;
+      border: 2px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.9rem;
+      position: relative;
+      z-index: 1;
+      transition: all 0.3s;
+    }
+
+    .tracker-step.done .tracker-icon {
+      background: var(--success);
+      border-color: var(--success);
+    }
+
+    .tracker-step.active .tracker-icon {
+      background: var(--primary);
+      border-color: var(--primary);
+      box-shadow: 0 0 0 4px rgba(255,107,53,0.15);
+    }
+
+    .tracker-label {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      text-align: center;
+      margin-top: 0.4rem;
+      white-space: nowrap;
+    }
+
+    .tracker-step.active .tracker-label,
+    .tracker-step.done .tracker-label {
+      color: var(--text-primary);
+      font-weight: 500;
+    }
+
+    /* FILTER TABS */
+    .filter-tabs {
+      display: flex;
+      gap: 0.5rem;
+      margin-bottom: 2rem;
+      flex-wrap: wrap;
+    }
+
+    .filter-tab {
+      padding: 0.5rem 1.25rem;
+      border-radius: 20px;
+      border: 1.5px solid var(--border);
+      background: white;
+      font-size: 0.88rem;
+      font-weight: 500;
+      cursor: pointer;
+      color: var(--text-secondary);
+      transition: all 0.2s;
+    }
+
+    .filter-tab:hover {
+      border-color: var(--primary);
+      color: var(--primary);
+    }
+
+    .filter-tab.active {
+      background: var(--primary);
+      border-color: var(--primary);
+      color: white;
+    }
+
+    @media (max-width: 768px) {
+      .order-card-header { flex-direction: column; align-items: flex-start; }
+      .order-card-footer { flex-direction: column; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAVBAR -->
+  <nav class="navbar">
+    <a href="index.html" class="navbar-brand">Fresh<span>Plate</span></a>
+    <ul class="navbar-nav">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="menu.html">Menu</a></li>
+      <li><a href="donation.html">Donate Food</a></li>
+      <li><a href="chatbot.html">AI Assistant</a></li>
+      <li><a href="orders.html" class="active">My Orders</a></li>
+    </ul>
+    <div class="navbar-actions"></div>
+    <div class="hamburger"><span></span><span></span><span></span></div>
+  </nav>
+
+  <div class="orders-page">
+    <div class="container">
+      <div class="orders-header">
+        <h1 class="orders-title">📦 My Orders</h1>
+        <a href="menu.html" class="btn btn-primary">+ Order More</a>
+      </div>
+
+      <!-- FILTER TABS -->
+      <div class="filter-tabs">
+        <div class="filter-tab active" onclick="filterOrders('all', this)">All Orders</div>
+        <div class="filter-tab" onclick="filterOrders('pending', this)">⏳ Pending</div>
+        <div class="filter-tab" onclick="filterOrders('confirmed', this)">✅ Confirmed</div>
+        <div class="filter-tab" onclick="filterOrders('preparing', this)">👨‍🍳 Preparing</div>
+        <div class="filter-tab" onclick="filterOrders('out_for_delivery', this)">🚴 On the Way</div>
+        <div class="filter-tab" onclick="filterOrders('delivered', this)">🎉 Delivered</div>
+        <div class="filter-tab" onclick="filterOrders('cancelled', this)">❌ Cancelled</div>
+      </div>
+
+      <div id="ordersList">
+        <div class="loading-container"><div class="spinner"></div></div>
+      </div>
+    </div>
+  </div>
+
+  <script src="javascript/main.js"></script>
+  <script>
+    if (!Auth.isLoggedIn()) window.location.href = 'login.html';
+
+    let allOrders = [];
+    let activeFilter = 'all';
+
+    const statusSteps = [
+      { key: 'pending', icon: '⏳', label: 'Pending' },
+      { key: 'confirmed', icon: '✅', label: 'Confirmed' },
+      { key: 'preparing', icon: '👨‍🍳', label: 'Preparing' },
+      { key: 'out_for_delivery', icon: '🚴', label: 'On the Way' },
+      { key: 'delivered', icon: '🎉', label: 'Delivered' },
+    ];
+
+    function getTrackerHTML(currentStatus) {
+      if (currentStatus === 'cancelled') {
+        return `<div style="text-align:center;padding:1rem;color:var(--danger);font-weight:500;">❌ Order Cancelled</div>`;
+      }
+
+      const currentIndex = statusSteps.findIndex(s => s.key === currentStatus);
+
+      return `
+        <div class="status-tracker">
+          ${statusSteps.map((step, i) => {
+            let cls = '';
+            if (i < currentIndex) cls = 'done';
+            else if (i === currentIndex) cls = 'active';
+            return `
+              <div class="tracker-step ${cls}">
+                <div class="tracker-icon">${step.icon}</div>
+                <div class="tracker-label">${step.label}</div>
+              </div>
+            `;
+          }).join('')}
+        </div>
+      `;
+    }
+
+    function renderOrders(orders) {
+      const container = document.getElementById('ordersList');
+
+      if (orders.length === 0) {
+        container.innerHTML = `
+          <div class="empty-state">
+            <div class="empty-state-icon">📦</div>
+            <div class="empty-state-title">No orders found</div>
+            <p style="margin-bottom:1.5rem;">You haven't placed any orders yet</p>
+            <a href="menu.html" class="btn btn-primary">Browse Menu</a>
+          </div>`;
+        return;
+      }
+
+      container.innerHTML = orders.map(order => `
+        <div class="order-card fade-up">
+          <div class="order-card-header">
+            <div>
+              <div class="order-id">Order #${order.id}</div>
+              <div class="order-date">${formatDate(order.ordered_at)}</div>
+            </div>
+            <div style="display:flex;align-items:center;gap:1rem;">
+              <span>${getStatusBadge(order.status)}</span>
+              <span style="font-size:0.85rem;color:var(--text-muted);">
+                ${order.payment_method === 'cod' ? '💵 Cash on Delivery' : '💳 Online'}
+              </span>
+            </div>
+          </div>
+
+          <div class="order-card-body">
+            ${getTrackerHTML(order.status)}
+
+            <div class="order-items-list">
+              ${order.order_items.map(item => `
+                <div class="order-item-row">
+                  <div class="order-item-emoji">🍽️</div>
+                  <div class="order-item-name">${item.food_item.name}</div>
+                  <div class="order-item-qty">x${item.quantity}</div>
+                  <div class="order-item-price">${formatPrice(item.subtotal)}</div>
+                </div>
+              `).join('')}
+            </div>
+
+            <div class="order-card-footer">
+              <div>
+                <div style="font-size:0.85rem;color:var(--text-muted);margin-bottom:0.25rem;">
+                  📍 ${order.delivery_address}
+                </div>
+                ${order.special_instructions ? `
+                  <div style="font-size:0.82rem;color:var(--text-muted);">
+                    📝 ${order.special_instructions}
+                  </div>` : ''}
+              </div>
+              <div style="text-align:right;">
+                <div style="font-size:0.82rem;color:var(--text-muted);">
+                  Delivery: ${formatPrice(order.delivery_charge)}
+                </div>
+                <div class="order-total">
+                  Total: <span>${formatPrice(order.total_amount)}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function filterOrders(status, el) {
+      document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+      el.classList.add('active');
+      activeFilter = status;
+
+      const filtered = status === 'all'
+        ? allOrders
+        : allOrders.filter(o => o.status === status);
+      renderOrders(filtered);
+    }
+
+    async function loadOrders() {
+      try {
+        allOrders = await Api.get('/orders/my-orders/');
+        renderOrders(allOrders);
+      } catch (e) {
+        document.getElementById('ordersList').innerHTML = `
+          <div class="empty-state">
+            <div class="empty-state-icon">😕</div>
+            <div class="empty-state-title">Could not load orders</div>
+          </div>`;
+      }
+    }
+
+    loadOrders();
+  </script>
+</body>
+</html>

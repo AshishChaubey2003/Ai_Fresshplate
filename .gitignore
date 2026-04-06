@@ -1,0 +1,8 @@
+freshplate_env/
+__pycache__/
+*.pyc
+backend/.env
+backend/db.sqlite3
+backend/media/
+node_modules/".env" 
+".env" 

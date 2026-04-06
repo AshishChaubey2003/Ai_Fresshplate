@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Register — FreshPlate</title>
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    .auth-page {
+      min-height: 100vh;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+    }
+
+    .auth-left {
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 3rem;
+      color: white;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .auth-left::before {
+      content: '';
+      position: absolute;
+      width: 400px;
+      height: 400px;
+      background: rgba(255,255,255,0.08);
+      border-radius: 50%;
+      top: -100px;
+      right: -100px;
+    }
+
+    .auth-left-content {
+      position: relative;
+      z-index: 1;
+      text-align: center;
+    }
+
+    .auth-left-logo {
+      font-family: 'Playfair Display', serif;
+      font-size: 2.5rem;
+      font-weight: 700;
+      color: white;
+      margin-bottom: 0.5rem;
+    }
+
+    .auth-left-tagline {
+      color: rgba(255,255,255,0.8);
+      margin-bottom: 2rem;
+    }
+
+    .role-cards {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      width: 100%;
+      max-width: 300px;
+    }
+
+    .role-info-card {
+      background: rgba(255,255,255,0.12);
+      border-radius: var(--radius-md);
+      padding: 1.25rem;
+      text-align: left;
+      border: 1px solid rgba(255,255,255,0.2);
+    }
+
+    .role-info-title {
+      font-weight: 600;
+      margin-bottom: 0.4rem;
+      font-size: 0.95rem;
+    }
+
+    .role-info-desc {
+      font-size: 0.82rem;
+      color: rgba(255,255,255,0.75);
+      line-height: 1.5;
+    }
+
+    .auth-right {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 3rem;
+      background: var(--bg);
+      overflow-y: auto;
+    }
+
+    .auth-form-card {
+      width: 100%;
+      max-width: 440px;
+      padding: 2rem 0;
+    }
+
+    .role-selector {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.75rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .role-option {
+      border: 2px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 1rem 0.5rem;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .role-option:hover {
+      border-color: var(--primary);
+    }
+
+    .role-option.selected {
+      border-color: var(--primary);
+      background: rgba(255,107,53,0.06);
+    }
+
+    .role-option-icon {
+      font-size: 1.8rem;
+      margin-bottom: 0.4rem;
+    }
+
+    .role-option-label {
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--text-secondary);
+    }
+
+    .role-option.selected .role-option-label {
+      color: var(--primary);
+    }
+
+    .password-wrapper {
+      position: relative;
+    }
+
+    .password-toggle {
+      position: absolute;
+      right: 1rem;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 1.1rem;
+      color: var(--text-muted);
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+
+    @media (max-width: 768px) {
+      .auth-page { grid-template-columns: 1fr; }
+      .auth-left { display: none; }
+      .auth-right { padding: 1.5rem; padding-top: 5rem; align-items: flex-start; }
+      .form-row { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="auth-page">
+    <!-- LEFT -->
+    <div class="auth-left">
+      <div class="auth-left-content">
+        <div class="auth-left-logo">FreshPlate</div>
+        <p class="auth-left-tagline">Join our food community today!</p>
+        <div class="role-cards">
+          <div class="role-info-card">
+            <div class="role-info-title">👤 Customer</div>
+            <div class="role-info-desc">Order fresh meals, track deliveries, and enjoy discounted rescue food.</div>
+          </div>
+          <div class="role-info-card">
+            <div class="role-info-title">🤝 Donor</div>
+            <div class="role-info-desc">Donate surplus food and help rescue centers feed those in need.</div>
+          </div>
+          <div class="role-info-card">
+            <div class="role-info-title">🛡️ Admin</div>
+            <div class="role-info-desc">Manage the platform, approve donations, and oversee operations.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT -->
+    <div class="auth-right">
+      <div class="auth-form-card">
+        <div style="margin-bottom:1.5rem;">
+          <a href="index.html" style="color:var(--text-muted);font-size:0.9rem;">← Back to Home</a>
+        </div>
+
+        <h1 style="font-size:2rem;font-weight:700;margin-bottom:0.4rem;">Create Account 🎉</h1>
+        <p style="color:var(--text-secondary);margin-bottom:1.5rem;font-size:0.95rem;">Join FreshPlate — it's free!</p>
+
+        <div id="alertBox"></div>
+
+        <!-- ROLE SELECTOR -->
+        <div style="margin-bottom:1rem;">
+          <label class="form-label">Select Your Role</label>
+          <div class="role-selector">
+            <div class="role-option selected" onclick="selectRole('customer', this)">
+              <div class="role-option-icon">👤</div>
+              <div class="role-option-label">Customer</div>
+            </div>
+            <div class="role-option" onclick="selectRole('donor', this)">
+              <div class="role-option-icon">🤝</div>
+              <div class="role-option-label">Donor</div>
+            </div>
+            <div class="role-option" onclick="selectRole('admin', this)">
+              <div class="role-option-icon">🛡️</div>
+              <div class="role-option-label">Admin</div>
+            </div>
+          </div>
+          <input type="hidden" id="role" value="customer">
+        </div>
+
+        <form id="registerForm">
+          <div class="form-group">
+            <label class="form-label">Full Name</label>
+            <input type="text" id="full_name" class="form-control" placeholder="Ashish Kumar Chaubey" required>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Email Address</label>
+            <input type="email" id="email" class="form-control" placeholder="you@example.com" required>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Phone Number</label>
+              <input type="tel" id="phone" class="form-control" placeholder="+91 9876543210">
+            </div>
+            <div class="form-group">
+              <label class="form-label">City</label>
+              <input type="text" id="address" class="form-control" placeholder="Lucknow">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Password</label>
+            <div class="password-wrapper">
+              <input type="password" id="password" class="form-control" placeholder="Min. 6 characters" required>
+              <button type="button" class="password-toggle" onclick="togglePassword('password')">👁️</button>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Confirm Password</label>
+            <div class="password-wrapper">
+              <input type="password" id="confirm_password" class="form-control" placeholder="Re-enter password" required>
+              <button type="button" class="password-toggle" onclick="togglePassword('confirm_password')">👁️</button>
+            </div>
+          </div>
+
+          <button type="submit" class="btn btn-primary btn-lg btn-block" id="registerBtn">
+            Create My Account 🚀
+          </button>
+        </form>
+
+        <div class="auth-divider">or</div>
+
+        <p style="text-align:center;color:var(--text-secondary);font-size:0.95rem;">
+          Already have an account?
+          <a href="login.html" style="color:var(--primary);font-weight:600;">Login Here</a>
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <script src="javascript/main.js"></script>
+  <script>
+    if (Auth.isLoggedIn()) window.location.href = 'index.html';
+
+    function selectRole(role, el) {
+      document.querySelectorAll('.role-option').forEach(r => r.classList.remove('selected'));
+      el.classList.add('selected');
+      document.getElementById('role').value = role;
+    }
+
+    function togglePassword(id) {
+      const input = document.getElementById(id);
+      input.type = input.type === 'password' ? 'text' : 'password';
+    }
+
+    function showAlert(message, type = 'danger') {
+      document.getElementById('alertBox').innerHTML = `
+        <div class="alert alert-${type}">
+          ${type === 'danger' ? '❌' : '✅'} ${message}
+        </div>
+      `;
+    }
+
+    document.getElementById('registerForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const btn = document.getElementById('registerBtn');
+      btn.textContent = 'Creating Account...';
+      btn.disabled = true;
+
+      const password = document.getElementById('password').value;
+      const confirm_password = document.getElementById('confirm_password').value;
+
+      if (password !== confirm_password) {
+        showAlert('Passwords do not match!');
+        btn.textContent = 'Create My Account 🚀';
+        btn.disabled = false;
+        return;
+      }
+
+      const payload = {
+        full_name: document.getElementById('full_name').value,
+        email: document.getElementById('email').value,
+        phone: document.getElementById('phone').value,
+        address: document.getElementById('address').value,
+        role: document.getElementById('role').value,
+        password,
+        confirm_password,
+      };
+
+      try {
+        const data = await Api.post('/users/register/', payload, false);
+        Auth.setAuth(data);
+        showAlert('Account created successfully! 🎉', 'success');
+        showToast('Welcome to FreshPlate! 🎉');
+        setTimeout(() => {
+          if (data.user.role === 'admin') {
+            window.location.href = 'dashboard.html';
+          } else {
+            window.location.href = 'index.html';
+          }
+        }, 1200);
+      } catch (err) {
+        const errors = err.data;
+        let msg = 'Registration failed. Please try again.';
+        if (errors) {
+          const firstKey = Object.keys(errors)[0];
+          msg = `${firstKey}: ${errors[firstKey][0]}`;
+        }
+        showAlert(msg);
+        btn.textContent = 'Create My Account 🚀';
+        btn.disabled = false;
+      }
+    });
+  </script>
+</body>
+</html>
