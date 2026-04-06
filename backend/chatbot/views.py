@@ -1,4 +1,5 @@
-import google.generativeai as genai
+from google import genai
+from google.genai import types
 from django.conf import settings
 from rest_framework import status
 from rest_framework.response import Response
@@ -6,7 +7,7 @@ from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
 from .models import ChatSession, ChatMessage
 
-genai.configure(api_key=settings.GEMINI_API_KEY)
+client = genai.Client(api_key=settings.GEMINI_API_KEY)
 
 class ChatView(APIView):
     permission_classes = [IsAuthenticated]
@@ -45,29 +46,29 @@ class ChatView(APIView):
         history = session.messages.all().order_by('created_at')
 
         try:
-            model = genai.GenerativeModel(
-                model_name='gemini-1.5-flash',
-                system_instruction="""You are FreshPlate AI Assistant — a helpful, friendly chatbot for FreshPlate,
-                a Cloud Kitchen and Food Rescue Platform. You help users with:
-                - Browsing food menu and placing orders
-                - Tracking order status
-                - Food donation process
-                - Account and profile management
-                - General food and nutrition queries
-                Always be polite, helpful and respond in the same language the user uses."""
-            )
-
             chat_history = []
             for m in history:
                 if m.role == 'user':
-                    chat_history.append({'role': 'user', 'parts': [m.content]})
+                    chat_history.append(types.Content(role='user', parts=[types.Part(text=m.content)]))
                 elif m.role == 'assistant':
-                    chat_history.append({'role': 'model', 'parts': [m.content]})
+                    chat_history.append(types.Content(role='model', parts=[types.Part(text=m.content)]))
 
-            chat = model.start_chat(history=chat_history[:-1])
-            response = chat.send_message(user_message)
+            system_prompt = """You are FreshPlate AI Assistant — a helpful, friendly chatbot for FreshPlate,
+            a Cloud Kitchen and Food Rescue Platform. You help users with:
+            - Browsing food menu and placing orders
+            - Tracking order status
+            - Food donation process
+            - Account and profile management
+            - General food and nutrition queries
+            Always be polite, helpful and respond in the same language the user uses."""
+
+            response = client.models.generate_content(
+                model='gemini-2.0-flash',
+                config=types.GenerateContentConfig(system_instruction=system_prompt),
+                contents=chat_history,
+            )
+
             assistant_message = response.text
-
             ChatMessage.objects.create(session=session, role='assistant', content=assistant_message)
 
             return Response({
