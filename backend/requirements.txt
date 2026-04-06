@@ -17,13 +17,11 @@ djangorestframework-simplejwt==5.5.1
 docstring_parser==0.17.0
 ecdsa==0.19.2
 fastapi==0.135.3
-google-ai-generativelanguage==0.6.15
-google-api-core==2.30.2
-google-api-python-client==2.193.0
-google-auth==2.49.1
-google-auth-httplib2==0.3.1
 google-generativeai==0.8.6
 googleapis-common-protos==1.74.0
+google-auth==2.49.1
+google-auth-httplib2==0.3.1
+google-api-python-client==2.193.0
 gunicorn==25.3.0
 h11==0.16.0
 httpcore==1.0.9
@@ -34,8 +32,6 @@ jiter==0.13.0
 packaging==26.0
 passlib==1.7.4
 pillow==12.2.0
-proto-plus==1.27.2
-protobuf==5.29.6
 psycopg2-binary==2.9.11
 pyasn1==0.6.3
 pyasn1_modules==0.4.2
