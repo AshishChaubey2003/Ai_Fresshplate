@@ -74,6 +74,23 @@ FreshPlate/
 ├── .gitignore
 ├── manage.py
 └── requirements.txt
+
+
+FreshPlate/
+├── backend/
+│   ├── chatbot/             # Claude AI chatbot integration
+│   ├── donations/           # Food donation module
+│   ├── food/                # Food items & categories
+│   ├── freshplate/          # Main Django project settings
+│   ├── media/               # Uploaded media files
+│   ├── orders/              # Order placement & tracking
+│   ├── users/               # User auth, roles & profiles
+│   ├── .env                 # Environment variables (not committed)
+│   ├── manage.py
+│   └── requirements.txt
+├── frontend/
+│   └── (HTML, CSS, JS files)
+└── freshplate_env/          # Virtual environment (not committed)
 ```
 
 ---
