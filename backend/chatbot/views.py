@@ -63,7 +63,7 @@ class ChatView(APIView):
             Always be polite, helpful and respond in the same language the user uses."""
 
             response = client.models.generate_content(
-                model='gemini-2.0-flash',
+                model='gemini-1.5-flash',
                 config=types.GenerateContentConfig(system_instruction=system_prompt),
                 contents=chat_history,
             )
