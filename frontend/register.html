@@ -3,23 +3,30 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Register — FreshPlate</title>
+  <title>Sign up — FreshPlate</title>
   <link rel="stylesheet" href="css/style.css">
   <style>
     .auth-page {
-      min-height: 100vh;
+      --c-primary: var(--primary, #ff6b35);
+      --c-bg: var(--bg, #f8f9fb);
+      --c-border: var(--border, #e6e8ec);
+      --c-muted: var(--text-muted, #8a8f98);
+      --c-text2: var(--text-secondary, #5b6068);
+      --c-success: var(--success, #06d6a0);
+      --c-danger: var(--danger, #e63946);
+
+      min-height: 100svh;
       display: grid;
       grid-template-columns: 1fr 1fr;
     }
 
     .auth-left {
-      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+      background: linear-gradient(135deg, var(--c-primary) 0%, var(--primary-dark, #e85a24) 100%);
       display: flex;
-      flex-direction: column;
       align-items: center;
       justify-content: center;
       padding: 3rem;
-      color: white;
+      color: #fff;
       position: relative;
       overflow: hidden;
     }
@@ -35,135 +42,131 @@
       right: -100px;
     }
 
-    .auth-left-content {
-      position: relative;
-      z-index: 1;
-      text-align: center;
-    }
+    .auth-left-content { position: relative; z-index: 1; text-align: center; max-width: 340px; }
 
-    .auth-left-logo {
-      font-family: 'Playfair Display', serif;
-      font-size: 2.5rem;
-      font-weight: 700;
-      color: white;
-      margin-bottom: 0.5rem;
-    }
+    .auth-left-logo { font-size: 2.1rem; font-weight: 700; color: #fff; margin-bottom: 0.4rem; }
 
-    .auth-left-tagline {
-      color: rgba(255,255,255,0.8);
-      margin-bottom: 2rem;
-    }
+    .auth-left-tagline { color: rgba(255,255,255,0.82); margin-bottom: 1.75rem; font-size: 0.95rem; }
 
-    .role-cards {
-      display: flex;
-      flex-direction: column;
-      gap: 1rem;
-      width: 100%;
-      max-width: 300px;
-    }
+    .role-cards { display: flex; flex-direction: column; gap: 0.85rem; }
 
     .role-info-card {
       background: rgba(255,255,255,0.12);
-      border-radius: var(--radius-md);
-      padding: 1.25rem;
+      border-radius: 12px;
+      padding: 1.1rem;
       text-align: left;
       border: 1px solid rgba(255,255,255,0.2);
     }
 
-    .role-info-title {
-      font-weight: 600;
-      margin-bottom: 0.4rem;
-      font-size: 0.95rem;
-    }
+    .role-info-title { font-weight: 600; margin-bottom: 0.35rem; font-size: 0.93rem; }
 
-    .role-info-desc {
-      font-size: 0.82rem;
-      color: rgba(255,255,255,0.75);
-      line-height: 1.5;
-    }
+    .role-info-desc { font-size: 0.82rem; color: rgba(255,255,255,0.78); line-height: 1.55; }
 
     .auth-right {
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 3rem;
-      background: var(--bg);
-      overflow-y: auto;
+      padding: 2.5rem;
+      background: var(--c-bg);
     }
 
-    .auth-form-card {
-      width: 100%;
-      max-width: 440px;
-      padding: 2rem 0;
-    }
+    .auth-form-card { width: 100%; max-width: 430px; padding: 1.5rem 0; }
 
     .role-selector {
       display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 0.75rem;
-      margin-bottom: 1.5rem;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.7rem;
+      margin-bottom: 1.25rem;
     }
 
     .role-option {
-      border: 2px solid var(--border);
-      border-radius: var(--radius-md);
-      padding: 1rem 0.5rem;
+      border: 2px solid var(--c-border);
+      border-radius: 12px;
+      padding: 0.9rem 0.6rem;
       text-align: center;
       cursor: pointer;
-      transition: all 0.2s;
+      background: #fff;
+      font-family: inherit;
     }
 
-    .role-option:hover {
-      border-color: var(--primary);
-    }
+    .role-option:hover { border-color: var(--c-primary); }
 
-    .role-option.selected {
-      border-color: var(--primary);
-      background: rgba(255,107,53,0.06);
-    }
+    .role-option.selected { border-color: var(--c-primary); background: rgba(255,107,53,0.06); }
 
-    .role-option-icon {
-      font-size: 1.8rem;
-      margin-bottom: 0.4rem;
-    }
+    .role-option-icon { font-size: 1.5rem; margin-bottom: 0.3rem; }
 
-    .role-option-label {
-      font-size: 0.82rem;
-      font-weight: 600;
-      color: var(--text-secondary);
-    }
+    .role-option-label { font-size: 0.85rem; font-weight: 600; color: var(--c-text2); }
+    .role-option.selected .role-option-label { color: var(--c-primary); }
 
-    .role-option.selected .role-option-label {
-      color: var(--primary);
-    }
+    .role-option-note { font-size: 0.72rem; color: var(--c-muted); margin-top: 0.15rem; }
 
-    .password-wrapper {
-      position: relative;
-    }
+    .password-wrapper { position: relative; }
+    .password-wrapper .form-control { padding-right: 3rem; }
 
     .password-toggle {
       position: absolute;
-      right: 1rem;
+      right: 0.85rem;
       top: 50%;
       transform: translateY(-50%);
       background: none;
       border: none;
       cursor: pointer;
-      font-size: 1.1rem;
-      color: var(--text-muted);
+      font-size: 1.05rem;
+      color: var(--c-muted);
+      padding: 0.25rem;
+      line-height: 1;
     }
 
-    .form-row {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 1rem;
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+
+    .rules { margin: 0.5rem 0 0; padding: 0; list-style: none; font-size: 0.79rem; }
+
+    .rules li {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      color: var(--c-muted);
+      padding: 0.1rem 0;
     }
 
-    @media (max-width: 768px) {
+    .rules li.ok { color: var(--c-success); }
+    .rules li::before { content: '○'; font-size: 0.8rem; }
+    .rules li.ok::before { content: '●'; }
+
+    .match-note { font-size: 0.79rem; margin-top: 0.3rem; }
+    .match-note.ok { color: var(--c-success); }
+    .match-note.bad { color: var(--c-danger); }
+
+    .field-hint { font-size: 0.78rem; color: var(--c-muted); display: block; margin-top: 0.25rem; }
+
+    .auth-divider {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      color: var(--c-muted);
+      font-size: 0.85rem;
+      margin: 1.5rem 0;
+    }
+
+    .auth-divider::before,
+    .auth-divider::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--c-border);
+    }
+
+    @media (max-width: 860px) {
       .auth-page { grid-template-columns: 1fr; }
       .auth-left { display: none; }
-      .auth-right { padding: 1.5rem; padding-top: 5rem; align-items: flex-start; }
+      .auth-right { padding: 2rem 1.25rem; padding-top: 3rem; align-items: flex-start; }
       .form-row { grid-template-columns: 1fr; }
+    }
+
+    .auth-page :focus-visible {
+      outline: 2px solid var(--c-primary);
+      outline-offset: 2px;
+      border-radius: 8px;
     }
   </style>
 </head>
@@ -174,19 +177,15 @@
     <div class="auth-left">
       <div class="auth-left-content">
         <div class="auth-left-logo">FreshPlate</div>
-        <p class="auth-left-tagline">Join our food community today!</p>
+        <p class="auth-left-tagline">Pick the account that fits what you want to do.</p>
         <div class="role-cards">
           <div class="role-info-card">
             <div class="role-info-title">👤 Customer</div>
-            <div class="role-info-desc">Order fresh meals, track deliveries, and enjoy discounted rescue food.</div>
+            <div class="role-info-desc">Order fresh meals, track deliveries and grab discounted rescue food.</div>
           </div>
           <div class="role-info-card">
             <div class="role-info-title">🤝 Donor</div>
-            <div class="role-info-desc">Donate surplus food and help rescue centers feed those in need.</div>
-          </div>
-          <div class="role-info-card">
-            <div class="role-info-title">🛡️ Admin</div>
-            <div class="role-info-desc">Manage the platform, approve donations, and oversee operations.</div>
+            <div class="role-info-desc">List surplus food so a rescue centre can collect and hand it out.</div>
           </div>
         </div>
       </div>
@@ -196,82 +195,100 @@
     <div class="auth-right">
       <div class="auth-form-card">
         <div style="margin-bottom:1.5rem;">
-          <a href="index.html" style="color:var(--text-muted);font-size:0.9rem;">← Back to Home</a>
+          <a href="index.html" style="color:var(--c-muted);font-size:0.88rem;">← Back to home</a>
         </div>
 
-        <h1 style="font-size:2rem;font-weight:700;margin-bottom:0.4rem;">Create Account 🎉</h1>
-        <p style="color:var(--text-secondary);margin-bottom:1.5rem;font-size:0.95rem;">Join FreshPlate — it's free!</p>
+        <h1 style="font-size:clamp(1.5rem,1.2rem + 1.2vw,1.9rem);font-weight:700;margin-bottom:0.35rem;">
+          Create your account
+        </h1>
+        <p style="color:var(--c-text2);margin-bottom:1.5rem;font-size:0.93rem;">
+          Takes a minute, and it's free.
+        </p>
 
         <div id="alertBox"></div>
 
-        <!-- ROLE SELECTOR -->
-        <div style="margin-bottom:1rem;">
-          <label class="form-label">Select Your Role</label>
-          <div class="role-selector">
-            <div class="role-option selected" onclick="selectRole('customer', this)">
-              <div class="role-option-icon">👤</div>
-              <div class="role-option-label">Customer</div>
+        <form id="registerForm" novalidate>
+          <div style="margin-bottom:0.5rem;">
+            <label class="form-label">What will you use FreshPlate for?</label>
+            <div class="role-selector">
+              <button type="button" class="role-option selected" data-role="customer">
+                <div class="role-option-icon">👤</div>
+                <div class="role-option-label">Ordering food</div>
+                <div class="role-option-note">Customer account</div>
+              </button>
+              <button type="button" class="role-option" data-role="donor">
+                <div class="role-option-icon">🤝</div>
+                <div class="role-option-label">Donating food</div>
+                <div class="role-option-note">Donor account</div>
+              </button>
             </div>
-            <div class="role-option" onclick="selectRole('donor', this)">
-              <div class="role-option-icon">🤝</div>
-              <div class="role-option-label">Donor</div>
-            </div>
-            <div class="role-option" onclick="selectRole('admin', this)">
-              <div class="role-option-icon">🛡️</div>
-              <div class="role-option-label">Admin</div>
-            </div>
-          </div>
-          <input type="hidden" id="role" value="customer">
-        </div>
-
-        <form id="registerForm">
-          <div class="form-group">
-            <label class="form-label">Full Name</label>
-            <input type="text" id="full_name" class="form-control" placeholder="Ashish Kumar Chaubey" required>
+            <input type="hidden" id="role" value="customer">
           </div>
 
           <div class="form-group">
-            <label class="form-label">Email Address</label>
-            <input type="email" id="email" class="form-control" placeholder="you@example.com" required>
+            <label class="form-label" for="full_name">Full name</label>
+            <input type="text" id="full_name" class="form-control" maxlength="150"
+              autocomplete="name" placeholder="Your name" required>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="email">Email</label>
+            <input type="email" id="email" class="form-control" autocomplete="email"
+              placeholder="you@example.com" required>
           </div>
 
           <div class="form-row">
             <div class="form-group">
-              <label class="form-label">Phone Number</label>
-              <input type="tel" id="phone" class="form-control" placeholder="+91 9876543210">
+              <label class="form-label" for="phone">Phone</label>
+              <input type="tel" id="phone" class="form-control" autocomplete="tel"
+                placeholder="9876543210" maxlength="15">
+              <span class="field-hint">10–15 digits</span>
             </div>
             <div class="form-group">
-              <label class="form-label">City</label>
-              <input type="text" id="address" class="form-control" placeholder="Lucknow">
+              <label class="form-label" for="address">Delivery address</label>
+              <input type="text" id="address" class="form-control" autocomplete="street-address"
+                placeholder="Flat, street, city">
+              <span class="field-hint">Fills in at checkout</span>
             </div>
           </div>
 
           <div class="form-group">
-            <label class="form-label">Password</label>
+            <label class="form-label" for="password">Password</label>
             <div class="password-wrapper">
-              <input type="password" id="password" class="form-control" placeholder="Min. 6 characters" required>
-              <button type="button" class="password-toggle" onclick="togglePassword('password')">👁️</button>
+              <input type="password" id="password" class="form-control" autocomplete="new-password"
+                placeholder="Create a password" required>
+              <button type="button" class="password-toggle" data-target="password"
+                aria-label="Show password">👁️</button>
             </div>
+            <!-- Mirrors AUTH_PASSWORD_VALIDATORS so people see the rules up front -->
+            <ul class="rules" id="passwordRules">
+              <li data-rule="length">At least 8 characters</li>
+              <li data-rule="notnumeric">Not only numbers</li>
+              <li data-rule="notcommon">Not a common password like "password1"</li>
+            </ul>
           </div>
 
           <div class="form-group">
-            <label class="form-label">Confirm Password</label>
+            <label class="form-label" for="confirm_password">Confirm password</label>
             <div class="password-wrapper">
-              <input type="password" id="confirm_password" class="form-control" placeholder="Re-enter password" required>
-              <button type="button" class="password-toggle" onclick="togglePassword('confirm_password')">👁️</button>
+              <input type="password" id="confirm_password" class="form-control" autocomplete="new-password"
+                placeholder="Type it again" required>
+              <button type="button" class="password-toggle" data-target="confirm_password"
+                aria-label="Show password">👁️</button>
             </div>
+            <div class="match-note" id="matchNote"></div>
           </div>
 
           <button type="submit" class="btn btn-primary btn-lg btn-block" id="registerBtn">
-            Create My Account 🚀
+            Create account
           </button>
         </form>
 
         <div class="auth-divider">or</div>
 
-        <p style="text-align:center;color:var(--text-secondary);font-size:0.95rem;">
+        <p style="text-align:center;color:var(--c-text2);font-size:0.93rem;">
           Already have an account?
-          <a href="login.html" style="color:var(--primary);font-weight:600;">Login Here</a>
+          <a href="login.html" style="color:var(--primary);font-weight:600;">Log in</a>
         </p>
       </div>
     </div>
@@ -279,77 +296,130 @@
 
   <script src="javascript/main.js"></script>
   <script>
+    // Only customer and donor exist here. Admin accounts are created with
+    // `manage.py createsuperuser` - the API rejects role=admin on sign-up.
+    const ALLOWED_ROLES = ['customer', 'donor'];
+
+    // A short list of the passwords Django's CommonPasswordValidator rejects,
+    // just so the user finds out before submitting. The server is the real check.
+    const COMMON_PASSWORDS = [
+      'password', 'password1', 'password123', '12345678', '123456789', 'qwerty123',
+      'abc12345', 'iloveyou', 'admin123', 'welcome1', 'letmein1', 'football',
+    ];
+
     if (Auth.isLoggedIn()) window.location.href = 'index.html';
 
-    function selectRole(role, el) {
-      document.querySelectorAll('.role-option').forEach(r => r.classList.remove('selected'));
-      el.classList.add('selected');
-      document.getElementById('role').value = role;
+    /* ---------- role ---------- */
+    document.querySelectorAll('.role-option').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.role-option').forEach(r => r.classList.remove('selected'));
+        btn.classList.add('selected');
+        document.getElementById('role').value = btn.dataset.role;
+      });
+    });
+
+    /* ---------- password ---------- */
+    document.querySelectorAll('.password-toggle').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const input = document.getElementById(btn.dataset.target);
+        const showing = input.type === 'text';
+        input.type = showing ? 'password' : 'text';
+        btn.textContent = showing ? '👁️' : '🙈';
+        btn.setAttribute('aria-label', showing ? 'Show password' : 'Hide password');
+      });
+    });
+
+    function checkPasswordRules() {
+      const value = document.getElementById('password').value;
+      const results = {
+        length: value.length >= 8,
+        notnumeric: value.length > 0 && !/^\d+$/.test(value),
+        notcommon: value.length > 0 && !COMMON_PASSWORDS.includes(value.toLowerCase()),
+      };
+      document.querySelectorAll('#passwordRules li').forEach(li => {
+        li.classList.toggle('ok', results[li.dataset.rule]);
+      });
+      return Object.values(results).every(Boolean);
     }
 
-    function togglePassword(id) {
-      const input = document.getElementById(id);
-      input.type = input.type === 'password' ? 'text' : 'password';
+    function checkMatch() {
+      const password = document.getElementById('password').value;
+      const confirm = document.getElementById('confirm_password').value;
+      const note = document.getElementById('matchNote');
+
+      if (!confirm) { note.textContent = ''; note.className = 'match-note'; return false; }
+      const same = password === confirm;
+      note.textContent = same ? 'Passwords match' : "Passwords don't match yet";
+      note.className = `match-note ${same ? 'ok' : 'bad'}`;
+      return same;
     }
 
+    document.getElementById('password').addEventListener('input', () => {
+      checkPasswordRules();
+      checkMatch();
+    });
+    document.getElementById('confirm_password').addEventListener('input', checkMatch);
+
+    /* ---------- submit ---------- */
     function showAlert(message, type = 'danger') {
-      document.getElementById('alertBox').innerHTML = `
-        <div class="alert alert-${type}">
-          ${type === 'danger' ? '❌' : '✅'} ${message}
-        </div>
-      `;
+      document.getElementById('alertBox').innerHTML =
+        `<div class="alert alert-${type}">${esc(message)}</div>`;
+      document.getElementById('alertBox').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     }
 
     document.getElementById('registerForm').addEventListener('submit', async (e) => {
       e.preventDefault();
-      const btn = document.getElementById('registerBtn');
-      btn.textContent = 'Creating Account...';
-      btn.disabled = true;
 
+      const fullName = document.getElementById('full_name').value.trim();
+      const email = document.getElementById('email').value.trim();
+      const phone = document.getElementById('phone').value.trim();
       const password = document.getElementById('password').value;
-      const confirm_password = document.getElementById('confirm_password').value;
+      const confirmPassword = document.getElementById('confirm_password').value;
+      const role = document.getElementById('role').value;
 
-      if (password !== confirm_password) {
-        showAlert('Passwords do not match!');
-        btn.textContent = 'Create My Account 🚀';
-        btn.disabled = false;
+      if (!fullName) { showAlert('Enter your full name.'); return; }
+      if (!/^\S+@\S+\.\S+$/.test(email)) { showAlert('Enter a valid email address.'); return; }
+      if (phone && !/^\+?[0-9]{10,15}$/.test(phone)) {
+        showAlert('Phone should be 10 to 15 digits, with an optional + at the start.');
         return;
       }
+      if (!checkPasswordRules()) { showAlert('Your password does not meet the rules listed below it.'); return; }
+      if (password !== confirmPassword) { showAlert("The two passwords don't match."); return; }
+      if (!ALLOWED_ROLES.includes(role)) { showAlert('Pick what you will use FreshPlate for.'); return; }
 
-      const payload = {
-        full_name: document.getElementById('full_name').value,
-        email: document.getElementById('email').value,
-        phone: document.getElementById('phone').value,
-        address: document.getElementById('address').value,
-        role: document.getElementById('role').value,
-        password,
-        confirm_password,
-      };
+      const btn = document.getElementById('registerBtn');
+      btn.textContent = 'Creating account…';
+      btn.disabled = true;
 
       try {
-        const data = await Api.post('/users/register/', payload, false);
+        const data = await Api.post('/users/register/', {
+          full_name: fullName,
+          email: email,
+          phone: phone,
+          address: document.getElementById('address').value.trim(),
+          role: role,
+          password: password,
+          confirm_password: confirmPassword,
+        }, false);
+
         Auth.setAuth(data);
-        showAlert('Account created successfully! 🎉', 'success');
-        showToast('Welcome to FreshPlate! 🎉');
-        setTimeout(() => {
-          if (data.user.role === 'admin') {
-            window.location.href = 'dashboard.html';
-          } else {
-            window.location.href = 'index.html';
-          }
-        }, 1200);
+        showAlert('Account created. Taking you in…', 'success');
+        showToast('Welcome to FreshPlate');
+
+        // Donors land on the donation page, customers on the menu
+        const target = data.user.role === 'donor' ? 'donation.html' : 'menu.html';
+        setTimeout(() => (window.location.href = target), 900);
       } catch (err) {
-        const errors = err.data;
-        let msg = 'Registration failed. Please try again.';
-        if (errors) {
-          const firstKey = Object.keys(errors)[0];
-          msg = `${firstKey}: ${errors[firstKey][0]}`;
-        }
-        showAlert(msg);
-        btn.textContent = 'Create My Account 🚀';
+        const message = err.status === 429
+          ? 'Too many sign-up attempts. Wait a minute and try again.'
+          : apiErrorMessage(err, 'Sign-up failed. Check the fields and try again.');
+        showAlert(message);
+        btn.textContent = 'Create account';
         btn.disabled = false;
       }
     });
+
+    checkPasswordRules();
   </script>
 </body>
 </html>

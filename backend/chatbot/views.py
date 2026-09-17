@@ -1,93 +1,99 @@
-from google import genai
-from google.genai import types
+import logging
+
 from django.conf import settings
+from django.shortcuts import get_object_or_404
+from drf_spectacular.utils import extend_schema
 from rest_framework import status
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework.permissions import IsAuthenticated
-from .models import ChatSession, ChatMessage
 
-client = genai.Client(api_key=settings.GEMINI_API_KEY)
+from .models import ChatMessage, ChatSession
+from .serializers import ChatRequestSerializer
+from .services import ChatbotSafetyBlocked, ChatbotUnavailable, generate_reply
+
+logger = logging.getLogger(__name__)
+
 
 class ChatView(APIView):
     permission_classes = [IsAuthenticated]
+    serializer_class = ChatRequestSerializer
+
+    def get_throttles(self):
+        # Rate-limit sending messages (each one costs money); reading history is free
+        self.throttle_scope = "chatbot" if self.request.method == "POST" else None
+        return super().get_throttles()
 
     def get(self, request):
-        session_id = request.query_params.get('session_id')
-        if session_id:
-            try:
-                session = ChatSession.objects.get(id=session_id, user=request.user)
-                messages = session.messages.all().order_by('created_at')
-                history = [{'role': m.role, 'content': m.content} for m in messages]
-                return Response({'session_id': session.id, 'messages': history})
-            except ChatSession.DoesNotExist:
-                return Response({'error': 'Session not found'}, status=status.HTTP_404_NOT_FOUND)
+        session_id = request.query_params.get("session_id")
 
-        sessions = ChatSession.objects.filter(user=request.user).order_by('-created_at')
-        return Response({'sessions': [{'id': s.id, 'created_at': s.created_at} for s in sessions]})
+        if session_id:
+            if not session_id.isdigit():
+                return Response({"error": "Invalid session id"}, status=status.HTTP_400_BAD_REQUEST)
+            # user=request.user means you can only open your own chats
+            session = get_object_or_404(ChatSession, id=session_id, user=request.user)
+            history = [
+                {"role": m.role, "content": m.content, "created_at": m.created_at}
+                for m in session.messages.all()
+            ]
+            return Response({"session_id": session.id, "title": session.title, "messages": history})
+
+        sessions = ChatSession.objects.filter(user=request.user)[:50]
+        return Response({
+            "sessions": [
+                {"id": s.id, "title": s.title or f"Chat #{s.id}", "created_at": s.created_at}
+                for s in sessions
+            ]
+        })
 
     def post(self, request):
-        user_message = request.data.get('message', '').strip()
-        session_id = request.data.get('session_id')
-
-        if not user_message:
-            return Response({'error': 'Message cannot be empty'}, status=status.HTTP_400_BAD_REQUEST)
+        serializer = ChatRequestSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        user_message = serializer.validated_data["message"]
+        session_id = serializer.validated_data.get("session_id")
 
         if session_id:
-            try:
-                session = ChatSession.objects.get(id=session_id, user=request.user)
-            except ChatSession.DoesNotExist:
-                session = ChatSession.objects.create(user=request.user)
+            # 404 instead of silently starting a new chat - the user thought
+            # they were continuing an old conversation
+            session = get_object_or_404(ChatSession, id=session_id, user=request.user)
         else:
-            session = ChatSession.objects.create(user=request.user)
+            session = ChatSession.objects.create(user=request.user, title=user_message[:60])
 
-        ChatMessage.objects.create(session=session, role='user', content=user_message)
+        ChatMessage.objects.create(session=session, role="user", content=user_message)
 
-        history = session.messages.all().order_by('created_at')
+        # Send only the last N messages. Sending the whole thread meant a long
+        # chat cost more on every single reply.
+        recent = list(session.messages.order_by("-created_at")[: settings.CHATBOT_HISTORY_LIMIT])[::-1]
+        history = [(m.role, m.content) for m in recent]
+        # Gemini requires the conversation to start with a user turn
+        while history and history[0][0] != "user":
+            history.pop(0)
 
         try:
-            chat_history = []
-            for m in history:
-                if m.role == 'user':
-                    chat_history.append(types.Content(role='user', parts=[types.Part(text=m.content)]))
-                elif m.role == 'assistant':
-                    chat_history.append(types.Content(role='model', parts=[types.Part(text=m.content)]))
-
-            system_prompt = """You are FreshPlate AI Assistant — a helpful, friendly chatbot for FreshPlate,
-            a Cloud Kitchen and Food Rescue Platform. You help users with:
-            - Browsing food menu and placing orders
-            - Tracking order status
-            - Food donation process
-            - Account and profile management
-            - General food and nutrition queries
-            Always be polite, helpful and respond in the same language the user uses."""
-
-            response = client.models.generate_content(
-                model='gemini-1.5-flash-latest',
-                config=types.GenerateContentConfig(system_instruction=system_prompt),
-                contents=chat_history,
+            reply = generate_reply(request.user, history)
+        except ChatbotSafetyBlocked:
+            reply = "Sorry, I can't help with that. Ask me about the menu, orders or donations."
+        except ChatbotUnavailable:
+            # Details go to the server log; the user gets a clean message
+            return Response(
+                {
+                    "session_id": session.id,
+                    "error": "The AI assistant is temporarily unavailable. Please try again later.",
+                },
+                status=status.HTTP_503_SERVICE_UNAVAILABLE,
             )
 
-            assistant_message = response.text
-            ChatMessage.objects.create(session=session, role='assistant', content=assistant_message)
+        ChatMessage.objects.create(session=session, role="assistant", content=reply)
+        session.save(update_fields=["updated_at"])  # bumps this chat to the top of the sidebar
 
-            return Response({
-                'session_id': session.id,
-                'message': assistant_message
-            }, status=status.HTTP_200_OK)
-
-        except Exception as e:
-            print(f"CHATBOT ERROR: {str(e)}")  
-            return Response({'error': f'AI service error: {str(e)}'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        return Response({"session_id": session.id, "message": reply}, status=status.HTTP_200_OK)
 
 
 class DeleteChatSessionView(APIView):
     permission_classes = [IsAuthenticated]
 
+    @extend_schema(request=None, responses={200: None})
     def delete(self, request, pk):
-        try:
-            session = ChatSession.objects.get(id=pk, user=request.user)
-            session.delete()
-            return Response({'message': 'Chat session deleted'})
-        except ChatSession.DoesNotExist:
-            return Response({'error': 'Session not found'}, status=status.HTTP_404_NOT_FOUND)
+        session = get_object_or_404(ChatSession, id=pk, user=request.user)
+        session.delete()
+        return Response({"message": "Chat session deleted"})

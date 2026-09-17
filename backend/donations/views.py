@@ -1,25 +1,34 @@
-from rest_framework import status, generics
+from django.db import transaction
+from django.shortcuts import get_object_or_404
+from django.utils import timezone
+from rest_framework import generics, status
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework.permissions import IsAuthenticated, AllowAny
+
+from users.permissions import IsAdminRole, IsDonorOrAdmin
+
 from .models import Donation, RescueCenter
-from .serializers import DonationSerializer, DonationCreateSerializer, RescueCenterSerializer
+from .serializers import (
+    DonationCreateSerializer,
+    DonationSerializer,
+    RescueCenterSerializer,
+    UpdateDonationStatusSerializer,
+)
 
 
 class DonationCreateView(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsDonorOrAdmin]
+    serializer_class = DonationCreateSerializer
 
     def post(self, request):
-        if request.user.role not in ['donor', 'admin']:
-            return Response({'error': 'Only donors can donate food'}, status=status.HTTP_403_FORBIDDEN)
         serializer = DonationCreateSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save(donor=request.user)
-            return Response({
-                'message': 'Donation submitted successfully!',
-                'donation': serializer.data
-            }, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        serializer.is_valid(raise_exception=True)
+        serializer.save(donor=request.user)
+        return Response(
+            {"message": "Donation submitted successfully!", "donation": serializer.data},
+            status=status.HTTP_201_CREATED,
+        )
 
 
 class MyDonationsView(generics.ListAPIView):
@@ -27,37 +36,65 @@ class MyDonationsView(generics.ListAPIView):
     serializer_class = DonationSerializer
 
     def get_queryset(self):
-        return Donation.objects.filter(donor=self.request.user).order_by('-created_at')
+        # select_related pulls the donor in the same query (no N+1)
+        return Donation.objects.select_related("donor").filter(donor=self.request.user)
 
 
-class AllDonationsView(APIView):
-    permission_classes = [IsAuthenticated]
+class AllDonationsView(generics.ListAPIView):
+    permission_classes = [IsAdminRole]
+    serializer_class = DonationSerializer
 
-    def get(self, request):
-        if request.user.role != 'admin':
-            return Response({'error': 'Admin access only'}, status=status.HTTP_403_FORBIDDEN)
-        donations = Donation.objects.all().order_by('-created_at')
-        serializer = DonationSerializer(donations, many=True)
-        return Response(serializer.data)
+    def get_queryset(self):
+        queryset = Donation.objects.select_related("donor")
+        status_filter = self.request.query_params.get("status")
+        if status_filter:
+            queryset = queryset.filter(status=status_filter)
+        return queryset
 
 
 class UpdateDonationStatusView(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAdminRole]
+    serializer_class = UpdateDonationStatusSerializer
 
     def patch(self, request, pk):
-        if request.user.role != 'admin':
-            return Response({'error': 'Admin access only'}, status=status.HTTP_403_FORBIDDEN)
-        try:
-            donation = Donation.objects.get(id=pk)
-            donation.status = request.data.get('status', donation.status)
-            donation.admin_note = request.data.get('admin_note', donation.admin_note)
-            donation.save()
-            return Response({
-                'message': 'Donation status updated',
-                'donation': DonationSerializer(donation).data
-            })
-        except Donation.DoesNotExist:
-            return Response({'error': 'Donation not found'}, status=status.HTTP_404_NOT_FOUND)
+        serializer = UpdateDonationStatusSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        data = serializer.validated_data
+
+        with transaction.atomic():
+            # select_for_update locks the row so two admins can't overwrite each other
+            donation = get_object_or_404(
+                Donation.objects.select_for_update().select_related("donor"), pk=pk
+            )
+            new_status = data.get("status", donation.status)
+
+            if new_status != donation.status:
+                if not donation.can_transition_to(new_status):
+                    return Response(
+                        {"error": f"Cannot change status from '{donation.status}' to '{new_status}'."},
+                        status=status.HTTP_400_BAD_REQUEST,
+                    )
+
+                # Food safety: never send out food that is past its expiry time
+                moving_forward = new_status in (
+                    Donation.Status.APPROVED,
+                    Donation.Status.PICKED_UP,
+                    Donation.Status.DISTRIBUTED,
+                )
+                if moving_forward and donation.expiry_time <= timezone.now():
+                    return Response(
+                        {"error": "This food has passed its expiry time. Reject it instead."},
+                        status=status.HTTP_400_BAD_REQUEST,
+                    )
+
+            donation.status = new_status
+            if "admin_note" in data:
+                donation.admin_note = data["admin_note"]
+            donation.save(update_fields=["status", "admin_note", "updated_at"])
+
+        return Response(
+            {"message": "Donation status updated", "donation": DonationSerializer(donation).data}
+        )
 
 
 class RescueCenterListView(generics.ListAPIView):
@@ -66,14 +103,7 @@ class RescueCenterListView(generics.ListAPIView):
     queryset = RescueCenter.objects.filter(is_active=True)
 
 
-class RescueCenterCreateView(APIView):
-    permission_classes = [IsAuthenticated]
-
-    def post(self, request):
-        if request.user.role != 'admin':
-            return Response({'error': 'Admin access only'}, status=status.HTTP_403_FORBIDDEN)
-        serializer = RescueCenterSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+class RescueCenterCreateView(generics.CreateAPIView):
+    permission_classes = [IsAdminRole]
+    serializer_class = RescueCenterSerializer
+    queryset = RescueCenter.objects.all()

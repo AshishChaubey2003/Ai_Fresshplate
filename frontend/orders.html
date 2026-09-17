@@ -7,238 +7,262 @@
   <link rel="stylesheet" href="css/style.css">
   <style>
     .orders-page {
+      --c-primary: var(--primary, #ff6b35);
+      --c-bg: var(--bg, #f8f9fb);
+      --c-border: var(--border, #e6e8ec);
+      --c-muted: var(--text-muted, #8a8f98);
+      --c-text2: var(--text-secondary, #5b6068);
+      --c-success: var(--success, #06d6a0);
+      --c-danger: var(--danger, #e63946);
+
       margin-top: 70px;
-      padding: 3rem 0;
+      padding: 2rem 0 3rem;
       min-height: calc(100vh - 70px);
+      background: var(--c-bg);
     }
 
     .orders-header {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      margin-bottom: 2rem;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+      flex-wrap: wrap;
     }
 
     .orders-title {
-      font-size: 2rem;
+      font-size: clamp(1.4rem, 1.1rem + 1.2vw, 1.9rem);
       font-weight: 700;
     }
 
-    .order-card {
-      background: white;
-      border-radius: var(--radius-lg);
-      border: 1px solid var(--border);
+    /* ---------- TABS ---------- */
+    .filter-tabs {
+      display: flex;
+      gap: 0.5rem;
       margin-bottom: 1.5rem;
-      overflow: hidden;
-      transition: box-shadow 0.3s;
+      overflow-x: auto;
+      padding-bottom: 0.3rem;
+      scrollbar-width: none;
     }
 
-    .order-card:hover {
-      box-shadow: var(--shadow-md);
+    .filter-tabs::-webkit-scrollbar { display: none; }
+
+    .filter-tab {
+      padding: 0.45rem 1rem;
+      border-radius: 20px;
+      border: 1.5px solid var(--c-border);
+      background: #fff;
+      font-size: 0.86rem;
+      font-weight: 500;
+      cursor: pointer;
+      color: var(--c-text2);
+      white-space: nowrap;
+      flex-shrink: 0;
+      font-family: inherit;
+    }
+
+    .filter-tab:hover { border-color: var(--c-primary); color: var(--c-primary); }
+
+    .filter-tab.active {
+      background: var(--c-primary);
+      border-color: var(--c-primary);
+      color: #fff;
+    }
+
+    .tab-count { opacity: 0.75; font-size: 0.8rem; }
+
+    /* ---------- ORDER CARD ---------- */
+    .order-card {
+      background: #fff;
+      border-radius: 16px;
+      border: 1px solid var(--c-border);
+      margin-bottom: 1.15rem;
+      overflow: hidden;
     }
 
     .order-card-header {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 1.25rem 1.5rem;
-      background: var(--bg);
-      border-bottom: 1px solid var(--border);
+      padding: 1rem 1.25rem;
+      background: var(--c-bg);
+      border-bottom: 1px solid var(--c-border);
       flex-wrap: wrap;
       gap: 0.75rem;
     }
 
-    .order-id {
-      font-weight: 700;
-      font-size: 1rem;
-    }
+    .order-id { font-weight: 700; font-size: 0.98rem; }
+    .order-date { font-size: 0.82rem; color: var(--c-muted); }
 
-    .order-date {
-      font-size: 0.85rem;
-      color: var(--text-muted);
-    }
+    .order-card-body { padding: 1.25rem; }
 
-    .order-card-body {
-      padding: 1.5rem;
-    }
-
-    .order-items-list {
-      display: flex;
-      flex-direction: column;
-      gap: 0.75rem;
-      margin-bottom: 1.25rem;
-    }
-
-    .order-item-row {
-      display: flex;
-      align-items: center;
-      gap: 1rem;
-    }
-
-    .order-item-emoji {
-      width: 44px;
-      height: 44px;
-      background: var(--bg);
-      border-radius: var(--radius-sm);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.3rem;
-      flex-shrink: 0;
-    }
-
-    .order-item-name {
-      flex: 1;
-      font-weight: 500;
-      font-size: 0.95rem;
-    }
-
-    .order-item-qty {
-      font-size: 0.85rem;
-      color: var(--text-muted);
-    }
-
-    .order-item-price {
-      font-weight: 600;
-      color: var(--primary);
-    }
-
-    .order-card-footer {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding-top: 1.25rem;
-      border-top: 1px solid var(--border);
-      flex-wrap: wrap;
-      gap: 0.75rem;
-    }
-
-    .order-total {
-      font-size: 1.1rem;
-      font-weight: 700;
-    }
-
-    .order-total span {
-      color: var(--primary);
-    }
-
-    /* STATUS TRACKER */
+    /* ---------- TRACKER ---------- */
     .status-tracker {
       display: flex;
-      align-items: center;
-      gap: 0;
-      margin: 1.25rem 0;
+      margin: 0.5rem 0 1.25rem;
       overflow-x: auto;
-      padding-bottom: 0.5rem;
+      padding-bottom: 0.4rem;
+      scrollbar-width: none;
     }
+
+    .status-tracker::-webkit-scrollbar { display: none; }
 
     .tracker-step {
       display: flex;
       flex-direction: column;
       align-items: center;
       flex: 1;
-      min-width: 80px;
+      min-width: 74px;
       position: relative;
     }
 
     .tracker-step::after {
       content: '';
       position: absolute;
-      top: 18px;
+      top: 17px;
       left: 50%;
       right: -50%;
       height: 2px;
-      background: var(--border);
+      background: var(--c-border);
       z-index: 0;
     }
 
-    .tracker-step:last-child::after {
-      display: none;
-    }
-
-    .tracker-step.done::after {
-      background: var(--success);
-    }
-
-    .tracker-step.active::after {
-      background: linear-gradient(90deg, var(--primary), var(--border));
-    }
+    .tracker-step:last-child::after { display: none; }
+    .tracker-step.done::after { background: var(--c-success); }
 
     .tracker-icon {
-      width: 36px;
-      height: 36px;
+      width: 34px;
+      height: 34px;
       border-radius: 50%;
-      background: white;
-      border: 2px solid var(--border);
+      background: #fff;
+      border: 2px solid var(--c-border);
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 0.9rem;
+      font-size: 0.85rem;
       position: relative;
       z-index: 1;
-      transition: all 0.3s;
     }
 
-    .tracker-step.done .tracker-icon {
-      background: var(--success);
-      border-color: var(--success);
-    }
+    .tracker-step.done .tracker-icon { background: var(--c-success); border-color: var(--c-success); }
 
     .tracker-step.active .tracker-icon {
-      background: var(--primary);
-      border-color: var(--primary);
+      background: var(--c-primary);
+      border-color: var(--c-primary);
       box-shadow: 0 0 0 4px rgba(255,107,53,0.15);
     }
 
     .tracker-label {
-      font-size: 0.72rem;
-      color: var(--text-muted);
+      font-size: 0.7rem;
+      color: var(--c-muted);
       text-align: center;
-      margin-top: 0.4rem;
+      margin-top: 0.35rem;
       white-space: nowrap;
     }
 
     .tracker-step.active .tracker-label,
-    .tracker-step.done .tracker-label {
-      color: var(--text-primary);
+    .tracker-step.done .tracker-label { color: var(--text-primary, #1a1d21); font-weight: 600; }
+
+    .cancelled-note {
+      text-align: center;
+      padding: 0.85rem;
+      color: var(--c-danger);
       font-weight: 500;
+      background: rgba(230,57,70,0.06);
+      border-radius: 10px;
+      margin-bottom: 1.25rem;
+      font-size: 0.9rem;
     }
 
-    /* FILTER TABS */
-    .filter-tabs {
+    /* ---------- ITEMS ---------- */
+    .order-items-list { display: flex; flex-direction: column; gap: 0.7rem; margin-bottom: 1.15rem; }
+
+    .order-item-row { display: flex; align-items: center; gap: 0.85rem; }
+
+    .order-item-emoji {
+      width: 42px;
+      height: 42px;
+      background: var(--c-bg);
+      border-radius: 10px;
       display: flex;
-      gap: 0.5rem;
-      margin-bottom: 2rem;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.15rem;
+      flex-shrink: 0;
+      overflow: hidden;
+    }
+
+    .order-item-emoji img { width: 100%; height: 100%; object-fit: cover; }
+
+    .order-item-info { flex: 1; min-width: 0; }
+
+    .order-item-name {
+      font-weight: 550;
+      font-size: 0.93rem;
+      overflow-wrap: anywhere;
+    }
+
+    .order-item-unit { font-size: 0.78rem; color: var(--c-muted); }
+
+    .order-item-qty { font-size: 0.84rem; color: var(--c-muted); flex-shrink: 0; }
+    .order-item-price { font-weight: 650; color: var(--c-primary); flex-shrink: 0; }
+
+    .order-card-footer {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      padding-top: 1.1rem;
+      border-top: 1px solid var(--c-border);
       flex-wrap: wrap;
+      gap: 1rem;
     }
 
-    .filter-tab {
-      padding: 0.5rem 1.25rem;
+    .order-meta { font-size: 0.83rem; color: var(--c-muted); overflow-wrap: anywhere; }
+    .order-total { font-size: 1.05rem; font-weight: 700; }
+    .order-total span { color: var(--c-primary); }
+
+    .paid-pill {
+      display: inline-block;
+      font-size: 0.72rem;
+      background: rgba(6,214,160,0.12);
+      color: #047857;
       border-radius: 20px;
-      border: 1.5px solid var(--border);
-      background: white;
-      font-size: 0.88rem;
-      font-weight: 500;
-      cursor: pointer;
-      color: var(--text-secondary);
-      transition: all 0.2s;
+      padding: 1px 8px;
+      margin-left: 0.35rem;
     }
 
-    .filter-tab:hover {
-      border-color: var(--primary);
-      color: var(--primary);
+    .live-note {
+      font-size: 0.78rem;
+      color: var(--c-muted);
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      margin-bottom: 1rem;
     }
 
-    .filter-tab.active {
-      background: var(--primary);
-      border-color: var(--primary);
-      color: white;
+    .live-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--c-success);
+      animation: pulse 2s infinite;
     }
 
-    @media (max-width: 768px) {
+    @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.35; } }
+
+    @media (max-width: 600px) {
       .order-card-header { flex-direction: column; align-items: flex-start; }
-      .order-card-footer { flex-direction: column; }
+      .order-card-footer { flex-direction: column; align-items: stretch; }
+      .order-card-footer .btn { width: 100%; }
     }
+
+    .orders-page :focus-visible {
+      outline: 2px solid var(--c-primary);
+      outline-offset: 2px;
+      border-radius: 8px;
+    }
+
+    @media (prefers-reduced-motion: reduce) { .live-dot { animation: none; } }
   </style>
 </head>
 <body>
@@ -257,161 +281,232 @@
     <div class="hamburger"><span></span><span></span><span></span></div>
   </nav>
 
-  <div class="orders-page">
+  <main class="orders-page">
     <div class="container">
       <div class="orders-header">
-        <h1 class="orders-title">📦 My Orders</h1>
-        <a href="menu.html" class="btn btn-primary">+ Order More</a>
+        <h1 class="orders-title">Your orders</h1>
+        <a href="menu.html" class="btn btn-primary">Order again</a>
       </div>
 
-      <!-- FILTER TABS -->
-      <div class="filter-tabs">
-        <div class="filter-tab active" onclick="filterOrders('all', this)">All Orders</div>
-        <div class="filter-tab" onclick="filterOrders('pending', this)">⏳ Pending</div>
-        <div class="filter-tab" onclick="filterOrders('confirmed', this)">✅ Confirmed</div>
-        <div class="filter-tab" onclick="filterOrders('preparing', this)">👨‍🍳 Preparing</div>
-        <div class="filter-tab" onclick="filterOrders('out_for_delivery', this)">🚴 On the Way</div>
-        <div class="filter-tab" onclick="filterOrders('delivered', this)">🎉 Delivered</div>
-        <div class="filter-tab" onclick="filterOrders('cancelled', this)">❌ Cancelled</div>
+      <div class="live-note" id="liveNote" style="display:none;">
+        <span class="live-dot"></span>
+        <span>Updating automatically while an order is on its way</span>
       </div>
+
+      <div class="filter-tabs" id="filterTabs"></div>
 
       <div id="ordersList">
         <div class="loading-container"><div class="spinner"></div></div>
       </div>
     </div>
-  </div>
+  </main>
 
   <script src="javascript/main.js"></script>
   <script>
     if (!Auth.isLoggedIn()) window.location.href = 'login.html';
 
-    let allOrders = [];
-    let activeFilter = 'all';
-
-    const statusSteps = [
-      { key: 'pending', icon: '⏳', label: 'Pending' },
+    const STATUS_STEPS = [
+      { key: 'pending', icon: '⏳', label: 'Placed' },
       { key: 'confirmed', icon: '✅', label: 'Confirmed' },
-      { key: 'preparing', icon: '👨‍🍳', label: 'Preparing' },
-      { key: 'out_for_delivery', icon: '🚴', label: 'On the Way' },
+      { key: 'preparing', icon: '👨‍🍳', label: 'Cooking' },
+      { key: 'out_for_delivery', icon: '🚴', label: 'On the way' },
       { key: 'delivered', icon: '🎉', label: 'Delivered' },
     ];
 
-    function getTrackerHTML(currentStatus) {
-      if (currentStatus === 'cancelled') {
-        return `<div style="text-align:center;padding:1rem;color:var(--danger);font-weight:500;">❌ Order Cancelled</div>`;
+    const TABS = [
+      { key: 'all', label: 'All' },
+      { key: 'pending', label: '⏳ Placed' },
+      { key: 'confirmed', label: '✅ Confirmed' },
+      { key: 'preparing', label: '👨‍🍳 Cooking' },
+      { key: 'out_for_delivery', label: '🚴 On the way' },
+      { key: 'delivered', label: '🎉 Delivered' },
+      { key: 'cancelled', label: '❌ Cancelled' },
+    ];
+
+    // The backend only allows a customer to cancel while it is still pending or confirmed
+    const CANCELLABLE = ['pending', 'confirmed'];
+    const LIVE_STATUSES = ['pending', 'confirmed', 'preparing', 'out_for_delivery'];
+
+    let allOrders = [];
+    let activeFilter = 'all';
+    let refreshTimer = null;
+
+    /* ---------- tabs ---------- */
+    function renderTabs() {
+      document.getElementById('filterTabs').innerHTML = TABS.map(tab => {
+        const count = tab.key === 'all'
+          ? allOrders.length
+          : allOrders.filter(o => o.status === tab.key).length;
+        // Hide empty tabs so the row stays short, but always keep "All"
+        if (count === 0 && tab.key !== 'all' && tab.key !== activeFilter) return '';
+        return `
+          <button class="filter-tab ${activeFilter === tab.key ? 'active' : ''}" data-status="${tab.key}">
+            ${tab.label} <span class="tab-count">${count}</span>
+          </button>`;
+      }).join('');
+    }
+
+    document.getElementById('filterTabs').addEventListener('click', (e) => {
+      const tab = e.target.closest('.filter-tab');
+      if (!tab) return;
+      activeFilter = tab.dataset.status;
+      renderTabs();
+      renderOrders();
+    });
+
+    /* ---------- tracker ---------- */
+    function trackerHTML(status) {
+      if (status === 'cancelled') {
+        return `<div class="cancelled-note">This order was cancelled</div>`;
       }
-
-      const currentIndex = statusSteps.findIndex(s => s.key === currentStatus);
-
+      const currentIndex = STATUS_STEPS.findIndex(s => s.key === status);
       return `
         <div class="status-tracker">
-          ${statusSteps.map((step, i) => {
-            let cls = '';
-            if (i < currentIndex) cls = 'done';
-            else if (i === currentIndex) cls = 'active';
+          ${STATUS_STEPS.map((step, i) => {
+            const cls = i < currentIndex ? 'done' : i === currentIndex ? 'active' : '';
             return `
               <div class="tracker-step ${cls}">
                 <div class="tracker-icon">${step.icon}</div>
                 <div class="tracker-label">${step.label}</div>
-              </div>
-            `;
+              </div>`;
           }).join('')}
-        </div>
-      `;
+        </div>`;
     }
 
-    function renderOrders(orders) {
+    /* ---------- orders ---------- */
+    function renderOrders() {
       const container = document.getElementById('ordersList');
+      const orders = activeFilter === 'all'
+        ? allOrders
+        : allOrders.filter(o => o.status === activeFilter);
 
       if (orders.length === 0) {
+        const isFiltered = activeFilter !== 'all';
         container.innerHTML = `
           <div class="empty-state">
             <div class="empty-state-icon">📦</div>
-            <div class="empty-state-title">No orders found</div>
-            <p style="margin-bottom:1.5rem;">You haven't placed any orders yet</p>
-            <a href="menu.html" class="btn btn-primary">Browse Menu</a>
+            <div class="empty-state-title">${isFiltered ? 'Nothing in this list' : 'No orders yet'}</div>
+            <p style="margin-bottom:1.5rem;">${isFiltered
+              ? 'Try another tab to see your other orders.'
+              : 'Your first order will show up here with live status.'}</p>
+            <a href="menu.html" class="btn btn-primary">Browse the menu</a>
           </div>`;
         return;
       }
 
+      // Order data is the user's own text (address, instructions) - still escaped,
+      // because an admin or another page may render the same values later.
       container.innerHTML = orders.map(order => `
-        <div class="order-card fade-up">
+        <article class="order-card">
           <div class="order-card-header">
             <div>
-              <div class="order-id">Order #${order.id}</div>
+              <div class="order-id">Order #${Number(order.id)}</div>
               <div class="order-date">${formatDate(order.ordered_at)}</div>
             </div>
-            <div style="display:flex;align-items:center;gap:1rem;">
+            <div style="display:flex;align-items:center;gap:0.85rem;flex-wrap:wrap;">
               <span>${getStatusBadge(order.status)}</span>
-              <span style="font-size:0.85rem;color:var(--text-muted);">
-                ${order.payment_method === 'cod' ? '💵 Cash on Delivery' : '💳 Online'}
+              <span style="font-size:0.83rem;color:var(--c-muted);">
+                ${order.payment_method === 'cod' ? '💵 Cash on delivery' : '💳 Online'}
+                ${order.payment_status ? '<span class="paid-pill">Paid</span>' : ''}
               </span>
             </div>
           </div>
 
           <div class="order-card-body">
-            ${getTrackerHTML(order.status)}
+            ${trackerHTML(order.status)}
 
             <div class="order-items-list">
               ${order.order_items.map(item => `
                 <div class="order-item-row">
-                  <div class="order-item-emoji">🍽️</div>
-                  <div class="order-item-name">${item.food_item.name}</div>
-                  <div class="order-item-qty">x${item.quantity}</div>
+                  <div class="order-item-emoji">
+                    ${item.food_item.image
+                      ? `<img src="${esc(item.food_item.image)}" alt="" loading="lazy">`
+                      : '🍽️'}
+                  </div>
+                  <div class="order-item-info">
+                    <div class="order-item-name">${esc(item.food_item.name)}</div>
+                    <div class="order-item-unit">${formatPrice(item.price)} each</div>
+                  </div>
+                  <div class="order-item-qty">× ${Number(item.quantity)}</div>
                   <div class="order-item-price">${formatPrice(item.subtotal)}</div>
-                </div>
-              `).join('')}
+                </div>`).join('')}
             </div>
 
             <div class="order-card-footer">
-              <div>
-                <div style="font-size:0.85rem;color:var(--text-muted);margin-bottom:0.25rem;">
-                  📍 ${order.delivery_address}
-                </div>
-                ${order.special_instructions ? `
-                  <div style="font-size:0.82rem;color:var(--text-muted);">
-                    📝 ${order.special_instructions}
-                  </div>` : ''}
+              <div style="min-width:0;">
+                <div class="order-meta">📍 ${esc(order.delivery_address)}</div>
+                ${order.special_instructions
+                  ? `<div class="order-meta" style="margin-top:0.25rem;">📝 ${esc(order.special_instructions)}</div>`
+                  : ''}
+                ${CANCELLABLE.includes(order.status) ? `
+                  <button class="btn btn-ghost btn-sm" style="color:var(--c-danger);margin-top:0.6rem;padding-left:0;"
+                          onclick="cancelOrder(${Number(order.id)})">
+                    Cancel this order
+                  </button>` : ''}
               </div>
               <div style="text-align:right;">
-                <div style="font-size:0.82rem;color:var(--text-muted);">
-                  Delivery: ${formatPrice(order.delivery_charge)}
-                </div>
-                <div class="order-total">
-                  Total: <span>${formatPrice(order.total_amount)}</span>
-                </div>
+                <div class="order-meta">Delivery ${formatPrice(order.delivery_charge)}</div>
+                <div class="order-total">Total <span>${formatPrice(order.total_amount)}</span></div>
               </div>
             </div>
           </div>
-        </div>
-      `).join('');
+        </article>`).join('');
     }
 
-    function filterOrders(status, el) {
-      document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
-      el.classList.add('active');
-      activeFilter = status;
-
-      const filtered = status === 'all'
-        ? allOrders
-        : allOrders.filter(o => o.status === status);
-      renderOrders(filtered);
+    async function cancelOrder(orderId) {
+      if (!confirm('Cancel this order? The kitchen will be told to stop.')) return;
+      try {
+        await Api.post(`/orders/my-orders/${orderId}/cancel/`);
+        showToast('Order cancelled');
+        await loadOrders();
+      } catch (e) {
+        // Status may have moved on while the page was open
+        showToast(apiErrorMessage(e, "This order can't be cancelled any more"), 'error');
+        loadOrders();
+      }
     }
 
-    async function loadOrders() {
+    async function loadOrders(showSpinner = false) {
+      if (showSpinner) {
+        document.getElementById('ordersList').innerHTML =
+          '<div class="loading-container"><div class="spinner"></div></div>';
+      }
       try {
         allOrders = await Api.get('/orders/my-orders/');
-        renderOrders(allOrders);
+        renderTabs();
+        renderOrders();
+        scheduleRefresh();
       } catch (e) {
+        if (e.status === 401) return;
         document.getElementById('ordersList').innerHTML = `
           <div class="empty-state">
             <div class="empty-state-icon">😕</div>
-            <div class="empty-state-title">Could not load orders</div>
+            <div class="empty-state-title">Orders didn't load</div>
+            <p style="margin-bottom:1rem;">${esc(apiErrorMessage(e, 'Check your connection and try again.'))}</p>
+            <button class="btn btn-primary" onclick="loadOrders(true)">Try again</button>
           </div>`;
       }
     }
 
-    loadOrders();
+    // Poll only while something is actually in progress, and only when the tab is
+    // visible - otherwise it burns requests in a background tab for nothing.
+    function scheduleRefresh() {
+      clearTimeout(refreshTimer);
+      const hasLiveOrder = allOrders.some(o => LIVE_STATUSES.includes(o.status));
+      document.getElementById('liveNote').style.display = hasLiveOrder ? 'flex' : 'none';
+      if (!hasLiveOrder) return;
+
+      refreshTimer = setTimeout(() => {
+        if (document.visibilityState === 'visible') loadOrders();
+        else scheduleRefresh();
+      }, 30000);
+    }
+
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'visible') loadOrders();
+    });
+
+    loadOrders(true);
   </script>
 </body>
 </html>

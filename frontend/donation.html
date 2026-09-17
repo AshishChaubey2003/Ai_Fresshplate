@@ -7,240 +7,227 @@
   <link rel="stylesheet" href="css/style.css">
   <style>
     .donations-page {
+      --c-primary: var(--primary, #ff6b35);
+      --c-secondary: var(--secondary, #2d4a3e);
+      --c-bg: var(--bg, #f8f9fb);
+      --c-border: var(--border, #e6e8ec);
+      --c-muted: var(--text-muted, #8a8f98);
+      --c-text2: var(--text-secondary, #5b6068);
+      --c-danger: var(--danger, #e63946);
+
       margin-top: 70px;
       min-height: calc(100vh - 70px);
     }
 
     .donations-hero {
-      background: linear-gradient(135deg, var(--secondary) 0%, var(--secondary-light) 100%);
-      padding: 4rem 0;
-      color: white;
+      background: linear-gradient(135deg, var(--c-secondary) 0%, var(--secondary-light, #3d6152) 100%);
+      padding: clamp(2.25rem, 5vw, 4rem) 0;
+      color: #fff;
       text-align: center;
     }
 
     .donations-hero-title {
-      font-size: 2.8rem;
+      font-size: clamp(1.7rem, 1.2rem + 2.4vw, 2.7rem);
       font-weight: 700;
-      color: white;
-      margin-bottom: 1rem;
+      color: #fff;
+      margin-bottom: 0.9rem;
+      line-height: 1.15;
     }
 
     .donations-hero-subtitle {
-      color: rgba(255,255,255,0.8);
-      font-size: 1.1rem;
-      max-width: 600px;
+      color: rgba(255,255,255,0.82);
+      font-size: 1rem;
+      max-width: 56ch;
       margin: 0 auto 2rem;
-      line-height: 1.8;
+      line-height: 1.75;
     }
 
     .hero-stats-row {
       display: flex;
       justify-content: center;
-      gap: 3rem;
+      gap: clamp(1.25rem, 5vw, 3rem);
       flex-wrap: wrap;
     }
 
-    .hero-stat {
-      text-align: center;
-    }
-
     .hero-stat-num {
-      font-family: 'Playfair Display', serif;
-      font-size: 2.2rem;
+      font-size: clamp(1.5rem, 1.2rem + 1.2vw, 2.1rem);
       font-weight: 700;
-      color: var(--accent);
+      color: var(--accent, #ffd166);
+      line-height: 1.2;
     }
 
-    .hero-stat-lbl {
-      font-size: 0.85rem;
-      color: rgba(255,255,255,0.7);
-    }
+    .hero-stat-lbl { font-size: 0.82rem; color: rgba(255,255,255,0.72); }
 
-    /* DONATION FORM */
+    /* ---------- LAYOUT ---------- */
     .donation-layout {
       display: grid;
-      grid-template-columns: 1fr 400px;
-      gap: 2rem;
-      padding: 3rem 0;
+      grid-template-columns: minmax(0, 1fr) 360px;
+      gap: 1.75rem;
+      padding: 2.5rem 0;
+      align-items: start;
+    }
+
+    .form-card {
+      background: #fff;
+      border-radius: 16px;
+      padding: clamp(1.25rem, 3vw, 2rem);
+      border: 1px solid var(--c-border);
     }
 
     .form-section-title {
-      font-size: 1.1rem;
+      font-size: 1rem;
       font-weight: 700;
-      margin-bottom: 1.25rem;
-      padding-bottom: 0.75rem;
-      border-bottom: 2px solid var(--primary);
-      color: var(--text-primary);
+      margin-bottom: 1.1rem;
+      padding-bottom: 0.65rem;
+      border-bottom: 2px solid var(--c-primary);
     }
+
+    .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+
+    .field-hint { font-size: 0.78rem; color: var(--c-muted); display: block; margin-top: 0.25rem; }
+    .field-error { font-size: 0.78rem; color: var(--c-danger); display: block; margin-top: 0.25rem; }
 
     .food-type-grid {
       display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 0.75rem;
-      margin-bottom: 1.25rem;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 0.7rem;
+      margin-bottom: 1.1rem;
     }
 
     .food-type-option {
-      border: 2px solid var(--border);
-      border-radius: var(--radius-md);
-      padding: 1rem;
+      border: 2px solid var(--c-border);
+      border-radius: 12px;
+      padding: 0.9rem 0.6rem;
       text-align: center;
       cursor: pointer;
-      transition: all 0.2s;
+      background: #fff;
+      font: inherit;
     }
 
-    .food-type-option:hover {
-      border-color: var(--secondary);
-    }
+    .food-type-option:hover { border-color: var(--c-secondary); }
 
     .food-type-option.selected {
-      border-color: var(--secondary);
+      border-color: var(--c-secondary);
       background: rgba(45,74,62,0.06);
     }
 
-    .food-type-icon {
-      font-size: 1.8rem;
-      margin-bottom: 0.4rem;
-    }
+    .food-type-icon { font-size: 1.5rem; margin-bottom: 0.3rem; }
 
-    .food-type-label {
-      font-size: 0.82rem;
-      font-weight: 600;
-      color: var(--text-secondary);
-    }
+    .food-type-label { font-size: 0.8rem; font-weight: 600; color: var(--c-text2); }
+    .food-type-option.selected .food-type-label { color: var(--c-secondary); }
 
-    .food-type-option.selected .food-type-label {
-      color: var(--secondary);
-    }
-
-    /* SIDEBAR */
-    .donation-sidebar {
-      display: flex;
-      flex-direction: column;
-      gap: 1.25rem;
-    }
+    /* ---------- SIDEBAR ---------- */
+    .donation-sidebar { display: flex; flex-direction: column; gap: 1.1rem; }
 
     .info-card {
-      background: white;
-      border-radius: var(--radius-md);
-      padding: 1.5rem;
-      border: 1px solid var(--border);
+      background: #fff;
+      border-radius: 14px;
+      padding: 1.25rem;
+      border: 1px solid var(--c-border);
     }
 
-    .info-card-title {
-      font-weight: 700;
-      margin-bottom: 1rem;
-      font-size: 1rem;
-    }
+    .info-card-title { font-weight: 700; margin-bottom: 0.9rem; font-size: 0.97rem; }
 
-    .info-steps {
-      display: flex;
-      flex-direction: column;
-      gap: 1rem;
-    }
+    .info-steps { display: flex; flex-direction: column; gap: 0.9rem; }
 
-    .info-step {
-      display: flex;
-      gap: 0.75rem;
-      align-items: flex-start;
-    }
+    .info-step { display: flex; gap: 0.7rem; align-items: flex-start; }
 
     .info-step-icon {
-      width: 36px;
-      height: 36px;
+      width: 32px;
+      height: 32px;
       background: rgba(45,74,62,0.1);
       border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 1rem;
       flex-shrink: 0;
     }
 
-    .info-step-text {
-      font-size: 0.88rem;
-      color: var(--text-secondary);
-      line-height: 1.5;
+    .info-step-text { font-size: 0.86rem; color: var(--c-text2); line-height: 1.5; }
+
+    .info-step-text strong { display: block; color: var(--text-primary, #1a1d21); margin-bottom: 0.1rem; }
+
+    .mini-donation {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.6rem 0;
+      border-bottom: 1px solid var(--c-border);
     }
 
-    .info-step-text strong {
-      display: block;
-      color: var(--text-primary);
-      margin-bottom: 0.2rem;
-    }
+    .mini-donation:last-child { border-bottom: none; }
 
-    /* MY DONATIONS */
-    .my-donations-section {
-      padding: 3rem 0;
-      background: var(--bg);
-    }
+    /* ---------- MY DONATIONS ---------- */
+    .my-donations-section { padding: 2.5rem 0; background: var(--c-bg); }
+
+    .section-heading { font-size: clamp(1.3rem, 1.1rem + 0.9vw, 1.7rem); font-weight: 700; margin-bottom: 0.4rem; }
+    .section-sub { color: var(--c-text2); margin-bottom: 1.5rem; font-size: 0.93rem; }
 
     .donation-item-card {
-      background: white;
-      border-radius: var(--radius-md);
-      border: 1px solid var(--border);
-      padding: 1.25rem 1.5rem;
-      margin-bottom: 1rem;
-      display: flex;
+      background: #fff;
+      border-radius: 14px;
+      border: 1px solid var(--c-border);
+      padding: 1.1rem 1.25rem;
+      margin-bottom: 0.85rem;
+      display: grid;
+      grid-template-columns: auto minmax(0, 1fr) auto;
       align-items: center;
-      justify-content: space-between;
       gap: 1rem;
-      transition: box-shadow 0.3s;
     }
 
-    .donation-item-card:hover {
-      box-shadow: var(--shadow-md);
-    }
-
-    .donation-info {
-      flex: 1;
-    }
-
-    .donation-name {
-      font-weight: 700;
-      font-size: 1rem;
-      margin-bottom: 0.3rem;
-    }
+    .donation-name { font-weight: 700; font-size: 0.98rem; margin-bottom: 0.3rem; overflow-wrap: anywhere; }
 
     .donation-meta {
-      font-size: 0.83rem;
-      color: var(--text-muted);
+      font-size: 0.82rem;
+      color: var(--c-muted);
       display: flex;
-      gap: 1rem;
+      gap: 0.9rem;
       flex-wrap: wrap;
+    }
+
+    .admin-note {
+      margin-top: 0.5rem;
+      font-size: 0.82rem;
+      color: var(--c-text2);
+      background: var(--c-bg);
+      padding: 0.5rem 0.7rem;
+      border-radius: 8px;
+      overflow-wrap: anywhere;
     }
 
     .rescue-centers-grid {
       display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 1.25rem;
-      margin-top: 1rem;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 1.1rem;
     }
 
     .rescue-center-card {
-      background: white;
-      border-radius: var(--radius-md);
-      padding: 1.25rem;
-      border: 1px solid var(--border);
-      transition: all 0.3s;
+      background: #fff;
+      border-radius: 14px;
+      padding: 1.15rem;
+      border: 1px solid var(--c-border);
     }
 
-    .rescue-center-card:hover {
-      box-shadow: var(--shadow-md);
-      border-color: var(--secondary);
-    }
+    .rescue-center-card:hover { border-color: var(--c-secondary); }
 
     @media (max-width: 1024px) {
-      .donation-layout { grid-template-columns: 1fr; }
-      .rescue-centers-grid { grid-template-columns: repeat(2, 1fr); }
+      .donation-layout { grid-template-columns: minmax(0, 1fr); }
     }
 
-    @media (max-width: 768px) {
-      .donations-hero-title { font-size: 2rem; }
-      .hero-stats-row { gap: 1.5rem; }
-      .food-type-grid { grid-template-columns: repeat(2, 1fr); }
-      .donation-item-card { flex-direction: column; align-items: flex-start; }
-      .rescue-centers-grid { grid-template-columns: 1fr; }
+    @media (max-width: 600px) {
+      .field-row { grid-template-columns: 1fr; }
+      .donation-item-card {
+        grid-template-columns: minmax(0, 1fr);
+        row-gap: 0.75rem;
+      }
+      .donation-item-card > .donation-emoji { display: none; }
+    }
+
+    .donations-page :focus-visible {
+      outline: 2px solid var(--c-primary);
+      outline-offset: 2px;
+      border-radius: 6px;
     }
   </style>
 </head>
@@ -263,281 +250,340 @@
   <div class="donations-page">
 
     <!-- HERO -->
-    <div class="donations-hero">
+    <header class="donations-hero">
       <div class="container">
-        <h1 class="donations-hero-title">🤝 Donate Food, Save Lives</h1>
+        <h1 class="donations-hero-title">Surplus food finds someone hungry</h1>
         <p class="donations-hero-subtitle">
-          Have surplus food? Don't let it go to waste. Donate it through FreshPlate and help rescue centers feed those in need. Every meal counts!
+          List the food you can't use, pick a time, and a rescue centre collects it. Cooked, raw or packaged — it all counts.
         </p>
         <div class="hero-stats-row">
           <div class="hero-stat">
-            <div class="hero-stat-num">200+</div>
-            <div class="hero-stat-lbl">Meals Donated</div>
+            <div class="hero-stat-num" id="statDonations">–</div>
+            <div class="hero-stat-lbl">Donations listed</div>
           </div>
           <div class="hero-stat">
-            <div class="hero-stat-num">50+</div>
-            <div class="hero-stat-lbl">Active Donors</div>
+            <div class="hero-stat-num" id="statDistributed">–</div>
+            <div class="hero-stat-lbl">Distributed</div>
           </div>
           <div class="hero-stat">
-            <div class="hero-stat-num">10+</div>
-            <div class="hero-stat-lbl">Rescue Centers</div>
+            <div class="hero-stat-num" id="statCenters">–</div>
+            <div class="hero-stat-lbl">Rescue centres</div>
           </div>
         </div>
       </div>
-    </div>
+    </header>
 
-    <!-- DONATION FORM + SIDEBAR -->
+    <!-- FORM + SIDEBAR -->
     <div class="container">
       <div class="donation-layout">
 
-        <!-- FORM -->
-        <div>
-          <div style="background:white;border-radius:var(--radius-lg);padding:2rem;border:1px solid var(--border);">
-            <h2 style="font-size:1.5rem;font-weight:700;margin-bottom:0.5rem;">📋 Submit a Donation</h2>
-            <p style="color:var(--text-secondary);margin-bottom:2rem;font-size:0.95rem;">
-              Fill in the details about the food you want to donate
-            </p>
+        <div class="form-card">
+          <h2 style="font-size:1.35rem;font-weight:700;margin-bottom:0.4rem;">List food for pickup</h2>
+          <p style="color:var(--c-text2);margin-bottom:1.5rem;font-size:0.93rem;">
+            Tell us what you have and when a volunteer can collect it.
+          </p>
 
-            <div id="donationAlert"></div>
+          <div id="donationAlert"></div>
+          <div id="accessPrompt" style="display:none;"></div>
 
-            <div id="loginPrompt" style="display:none;">
-              <div class="alert alert-warning">
-                ⚠️ Please <a href="login.html" style="color:var(--primary);font-weight:600;">login</a> as a Donor to submit a donation.
+          <form id="donationForm">
+            <div class="form-section-title">About the food</div>
+
+            <div class="form-group">
+              <label class="form-label" for="food_name">What is it?</label>
+              <input type="text" id="food_name" class="form-control" maxlength="200"
+                placeholder="Veg biryani, roti and sabzi, bananas…" required>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Food type</label>
+              <div class="food-type-grid">
+                <button type="button" class="food-type-option selected" data-type="cooked">
+                  <div class="food-type-icon">🍛</div>
+                  <div class="food-type-label">Cooked</div>
+                </button>
+                <button type="button" class="food-type-option" data-type="raw">
+                  <div class="food-type-icon">🥕</div>
+                  <div class="food-type-label">Raw</div>
+                </button>
+                <button type="button" class="food-type-option" data-type="packaged">
+                  <div class="food-type-icon">📦</div>
+                  <div class="food-type-label">Packaged</div>
+                </button>
+                <button type="button" class="food-type-option" data-type="fruits_vegetables">
+                  <div class="food-type-icon">🍎</div>
+                  <div class="food-type-label">Fruits & veg</div>
+                </button>
+              </div>
+              <input type="hidden" id="food_type" value="cooked">
+            </div>
+
+            <div class="field-row">
+              <div class="form-group">
+                <label class="form-label" for="quantity">How much?</label>
+                <input type="text" id="quantity" class="form-control" maxlength="100"
+                  placeholder="5 kg / 10 plates" required>
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="description">Anything else? (optional)</label>
+                <input type="text" id="description" class="form-control" maxlength="300"
+                  placeholder="Packed at 2pm, mildly spiced">
               </div>
             </div>
 
-            <form id="donationForm">
-              <div class="form-section-title">🍱 Food Details</div>
+            <div class="form-section-title" style="margin-top:1.4rem;">Pickup</div>
 
+            <div class="form-group">
+              <label class="form-label" for="pickup_address">Pickup address</label>
+              <textarea id="pickup_address" class="form-control" rows="2"
+                placeholder="Building, street, area, city, pincode" required></textarea>
+            </div>
+
+            <div class="field-row">
               <div class="form-group">
-                <label class="form-label">Food Name *</label>
-                <input type="text" id="food_name" class="form-control" placeholder="e.g. Biryani, Roti Sabzi, Fruits..." required>
+                <label class="form-label" for="pickup_time">Ready for pickup at</label>
+                <input type="datetime-local" id="pickup_time" class="form-control" required>
               </div>
-
               <div class="form-group">
-                <label class="form-label">Food Type *</label>
-                <div class="food-type-grid">
-                  <div class="food-type-option selected" onclick="selectFoodType('cooked', this)">
-                    <div class="food-type-icon">🍛</div>
-                    <div class="food-type-label">Cooked Food</div>
-                  </div>
-                  <div class="food-type-option" onclick="selectFoodType('raw', this)">
-                    <div class="food-type-icon">🥕</div>
-                    <div class="food-type-label">Raw Food</div>
-                  </div>
-                  <div class="food-type-option" onclick="selectFoodType('packaged', this)">
-                    <div class="food-type-icon">📦</div>
-                    <div class="food-type-label">Packaged Food</div>
-                  </div>
-                  <div class="food-type-option" onclick="selectFoodType('fruits_vegetables', this)">
-                    <div class="food-type-icon">🍎</div>
-                    <div class="food-type-label">Fruits & Vegetables</div>
-                  </div>
-                </div>
-                <input type="hidden" id="food_type" value="cooked">
+                <label class="form-label" for="expiry_time">Safe to eat until</label>
+                <input type="datetime-local" id="expiry_time" class="form-control" required>
+                <span class="field-hint" id="timeHint">Must be after the pickup time.</span>
               </div>
+            </div>
 
-              <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
-                <div class="form-group">
-                  <label class="form-label">Quantity *</label>
-                  <input type="text" id="quantity" class="form-control" placeholder="e.g. 5 kg, 10 plates" required>
-                </div>
-                <div class="form-group">
-                  <label class="form-label">Description</label>
-                  <input type="text" id="description" class="form-control" placeholder="Brief description...">
-                </div>
-              </div>
-
-              <div class="form-section-title" style="margin-top:1.5rem;">📍 Pickup Details</div>
-
-              <div class="form-group">
-                <label class="form-label">Pickup Address *</label>
-                <textarea id="pickup_address" class="form-control" rows="2"
-                  placeholder="Full address for food pickup..." required></textarea>
-              </div>
-
-              <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
-                <div class="form-group">
-                  <label class="form-label">Pickup Time *</label>
-                  <input type="datetime-local" id="pickup_time" class="form-control" required>
-                </div>
-                <div class="form-group">
-                  <label class="form-label">Food Expiry Time *</label>
-                  <input type="datetime-local" id="expiry_time" class="form-control" required>
-                </div>
-              </div>
-
-              <button type="submit" class="btn btn-secondary btn-lg btn-block" id="donateBtn">
-                🤝 Submit Donation
-              </button>
-            </form>
-          </div>
+            <button type="submit" class="btn btn-secondary btn-lg btn-block" id="donateBtn">
+              List this donation
+            </button>
+          </form>
         </div>
 
         <!-- SIDEBAR -->
-        <div class="donation-sidebar">
-
+        <aside class="donation-sidebar">
           <div class="info-card">
-            <div class="info-card-title">📋 How It Works</div>
+            <div class="info-card-title">What happens next</div>
             <div class="info-steps">
               <div class="info-step">
                 <div class="info-step-icon">📝</div>
-                <div class="info-step-text">
-                  <strong>Submit Details</strong>
-                  Fill in food info, quantity and pickup time
-                </div>
+                <div class="info-step-text"><strong>You list it</strong>Food details, quantity and pickup time.</div>
               </div>
               <div class="info-step">
                 <div class="info-step-icon">✅</div>
-                <div class="info-step-text">
-                  <strong>Admin Approval</strong>
-                  Our team reviews and approves your donation
-                </div>
+                <div class="info-step-text"><strong>We review it</strong>An admin approves or declines, usually the same day.</div>
               </div>
               <div class="info-step">
                 <div class="info-step-icon">🚗</div>
-                <div class="info-step-text">
-                  <strong>Food Pickup</strong>
-                  Rescue center volunteers pick up the food
-                </div>
+                <div class="info-step-text"><strong>A volunteer collects</strong>Someone from a rescue centre picks it up.</div>
               </div>
               <div class="info-step">
                 <div class="info-step-icon">🎉</div>
-                <div class="info-step-text">
-                  <strong>Food Distributed</strong>
-                  Food reaches those who need it most
-                </div>
+                <div class="info-step-text"><strong>It gets eaten</strong>You'll see the status change to distributed.</div>
               </div>
             </div>
           </div>
 
           <div class="info-card" style="background:linear-gradient(135deg,#f0f7f4,#e8f5f0);">
-            <div class="info-card-title">💚 Why Donate?</div>
-            <div style="display:flex;flex-direction:column;gap:0.6rem;">
-              <div style="font-size:0.88rem;color:var(--text-secondary);display:flex;gap:0.5rem;">
-                <span>✅</span> Reduce food waste
-              </div>
-              <div style="font-size:0.88rem;color:var(--text-secondary);display:flex;gap:0.5rem;">
-                <span>✅</span> Feed the hungry
-              </div>
-              <div style="font-size:0.88rem;color:var(--text-secondary);display:flex;gap:0.5rem;">
-                <span>✅</span> Help rescue centers
-              </div>
-              <div style="font-size:0.88rem;color:var(--text-secondary);display:flex;gap:0.5rem;">
-                <span>✅</span> Make a real difference
-              </div>
-              <div style="font-size:0.88rem;color:var(--text-secondary);display:flex;gap:0.5rem;">
-                <span>✅</span> Track your donations
-              </div>
-            </div>
+            <div class="info-card-title">Before you list</div>
+            <ul style="margin:0;padding-left:1.1rem;color:var(--c-text2);font-size:0.86rem;line-height:1.8;">
+              <li>Cooked food should be less than 4 hours old</li>
+              <li>Keep it covered and cool until pickup</li>
+              <li>Skip anything already served or partly eaten</li>
+              <li>Be available at the address at the pickup time</li>
+            </ul>
           </div>
 
-          <!-- MY DONATIONS PREVIEW -->
           <div class="info-card" id="myDonationsCard" style="display:none;">
-            <div class="info-card-title">📦 My Recent Donations</div>
+            <div class="info-card-title">Your recent listings</div>
             <div id="myDonationsList"></div>
-            <a href="#myDonations" class="btn btn-ghost btn-sm btn-block" style="margin-top:0.75rem;">
-              View All →
-            </a>
+            <a href="#myDonations" class="btn btn-ghost btn-sm btn-block" style="margin-top:0.7rem;">See all</a>
           </div>
-        </div>
+        </aside>
       </div>
     </div>
 
-    <!-- MY DONATIONS LIST -->
-    <div class="my-donations-section" id="myDonations">
+    <!-- MY DONATIONS -->
+    <section class="my-donations-section" id="myDonations">
       <div class="container">
-        <h2 style="font-size:1.8rem;font-weight:700;margin-bottom:0.5rem;">📦 My Donations</h2>
-        <p style="color:var(--text-secondary);margin-bottom:2rem;">Track all your food donations</p>
+        <h2 class="section-heading">Your donations</h2>
+        <p class="section-sub">Every listing you've made and where it has reached.</p>
         <div id="donationsList">
           <div class="loading-container"><div class="spinner"></div></div>
         </div>
       </div>
-    </div>
+    </section>
 
     <!-- RESCUE CENTERS -->
-    <div style="padding:3rem 0;">
+    <section style="padding:2.5rem 0;">
       <div class="container">
-        <h2 style="font-size:1.8rem;font-weight:700;margin-bottom:0.5rem;">🏥 Rescue Centers</h2>
-        <p style="color:var(--text-secondary);margin-bottom:2rem;">Centers that receive and distribute donated food</p>
+        <h2 class="section-heading">Rescue centres</h2>
+        <p class="section-sub">These centres collect donated food and hand it out.</p>
         <div class="rescue-centers-grid" id="rescueCentersList">
           <div class="loading-container"><div class="spinner"></div></div>
         </div>
       </div>
-    </div>
-
+    </section>
   </div>
 
   <!-- FOOTER -->
   <footer class="footer">
     <div class="container">
       <div class="footer-bottom">
-        <p>© 2025 FreshPlate. Built with ❤️ by Ashish Kumar Chaubey</p>
+        <p>© <span id="year"></span> FreshPlate. Built by Ashish Kumar Chaubey</p>
       </div>
     </div>
   </footer>
 
   <script src="javascript/main.js"></script>
   <script>
-    function selectFoodType(type, el) {
-      document.querySelectorAll('.food-type-option').forEach(o => o.classList.remove('selected'));
-      el.classList.add('selected');
-      document.getElementById('food_type').value = type;
+    const FOOD_TYPE_LABELS = {
+      cooked: 'Cooked food',
+      raw: 'Raw food',
+      packaged: 'Packaged food',
+      fruits_vegetables: 'Fruits & vegetables',
+    };
+
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    /* ---------- date helpers ---------- */
+    // datetime-local needs local time, not UTC - toISOString() would shift by 5:30
+    function toLocalInput(date) {
+      const copy = new Date(date.getTime() - date.getTimezoneOffset() * 60000);
+      return copy.toISOString().slice(0, 16);
     }
 
-    // Set min datetime to now
-    const now = new Date();
-    now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
-    const nowStr = now.toISOString().slice(0, 16);
-    document.getElementById('pickup_time').min = nowStr;
-    document.getElementById('pickup_time').value = nowStr;
-    document.getElementById('expiry_time').min = nowStr;
+    const pickupField = document.getElementById('pickup_time');
+    const expiryField = document.getElementById('expiry_time');
 
-    // Show/hide form based on auth
-    if (!Auth.isLoggedIn() || (!Auth.isDonor() && !Auth.isAdmin())) {
-      document.getElementById('loginPrompt').style.display = 'block';
-      document.getElementById('donationForm').style.display = 'none';
+    const now = new Date();
+    pickupField.min = toLocalInput(now);
+    pickupField.value = toLocalInput(new Date(now.getTime() + 60 * 60000));      // an hour from now
+    expiryField.min = toLocalInput(now);
+    expiryField.value = toLocalInput(new Date(now.getTime() + 5 * 60 * 60000));  // 4 hours after pickup
+
+    // Expiry must stay after pickup - the backend rejects anything else
+    pickupField.addEventListener('change', () => {
+      const pickup = new Date(pickupField.value);
+      if (isNaN(pickup)) return;
+      expiryField.min = toLocalInput(pickup);
+      if (!expiryField.value || new Date(expiryField.value) <= pickup) {
+        expiryField.value = toLocalInput(new Date(pickup.getTime() + 4 * 60 * 60000));
+      }
+      validateTimes();
+    });
+    expiryField.addEventListener('change', validateTimes);
+
+    function validateTimes() {
+      const pickup = new Date(pickupField.value);
+      const expiry = new Date(expiryField.value);
+      const hint = document.getElementById('timeHint');
+
+      if (isNaN(pickup) || isNaN(expiry)) return true;
+      if (expiry <= pickup) {
+        hint.textContent = 'Expiry must be later than the pickup time.';
+        hint.className = 'field-error';
+        return false;
+      }
+      const hours = Math.round((expiry - pickup) / 3600000);
+      hint.textContent = `Volunteers get about ${hours} ${hours === 1 ? 'hour' : 'hours'} to collect it.`;
+      hint.className = 'field-hint';
+      return true;
+    }
+
+    /* ---------- food type ---------- */
+    document.querySelectorAll('.food-type-option').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.food-type-option').forEach(o => o.classList.remove('selected'));
+        btn.classList.add('selected');
+        document.getElementById('food_type').value = btn.dataset.type;
+      });
+    });
+
+    /* ---------- access ---------- */
+    // Only donors and admins may post - the API enforces this with IsDonorOrAdmin
+    function applyAccessRules() {
+      const prompt = document.getElementById('accessPrompt');
+      const form = document.getElementById('donationForm');
+
+      if (!Auth.isLoggedIn()) {
+        prompt.innerHTML = `<div class="alert alert-warning">
+          Log in with a donor account to list food.
+          <a href="login.html" style="color:var(--primary);font-weight:600;">Log in</a> or
+          <a href="register.html" style="color:var(--primary);font-weight:600;">create one</a>.</div>`;
+      } else if (!Auth.isDonor() && !Auth.isAdmin()) {
+        prompt.innerHTML = `<div class="alert alert-warning">
+          Your account is a customer account, so it can't list food. Donor accounts are chosen at sign-up
+          — <a href="register.html" style="color:var(--primary);font-weight:600;">register as a donor</a> to donate.</div>`;
+      } else {
+        return true;
+      }
+
+      prompt.style.display = 'block';
+      form.style.display = 'none';
+      return false;
+    }
+
+    const canDonate = applyAccessRules();
+
+    /* ---------- submit ---------- */
+    function showAlert(message, type = 'danger') {
+      document.getElementById('donationAlert').innerHTML =
+        `<div class="alert alert-${type}">${esc(message)}</div>`;
     }
 
     document.getElementById('donationForm').addEventListener('submit', async (e) => {
       e.preventDefault();
+
+      if (!validateTimes()) {
+        showAlert('Set an expiry time that is after the pickup time.');
+        expiryField.focus();
+        return;
+      }
+
       const btn = document.getElementById('donateBtn');
-      btn.textContent = 'Submitting...';
+      btn.textContent = 'Listing…';
       btn.disabled = true;
 
       const payload = {
-        food_name: document.getElementById('food_name').value,
+        food_name: document.getElementById('food_name').value.trim(),
         food_type: document.getElementById('food_type').value,
-        quantity: document.getElementById('quantity').value,
-        description: document.getElementById('description').value,
-        pickup_address: document.getElementById('pickup_address').value,
-        pickup_time: document.getElementById('pickup_time').value,
-        expiry_time: document.getElementById('expiry_time').value,
+        quantity: document.getElementById('quantity').value.trim(),
+        description: document.getElementById('description').value.trim(),
+        pickup_address: document.getElementById('pickup_address').value.trim(),
+        pickup_time: pickupField.value,
+        expiry_time: expiryField.value,
       };
 
       try {
         await Api.post('/donations/create/', payload);
-        document.getElementById('donationAlert').innerHTML = `
-          <div class="alert alert-success">✅ Donation submitted! Our team will review it shortly.</div>`;
+        showAlert('Listed. An admin will review it shortly.', 'success');
         document.getElementById('donationForm').reset();
-        showToast('Donation submitted successfully! 🎉');
+
+        // reset() clears the hidden field too, so put the defaults back
+        document.querySelectorAll('.food-type-option').forEach((o, i) =>
+          o.classList.toggle('selected', i === 0));
+        document.getElementById('food_type').value = 'cooked';
+        pickupField.value = toLocalInput(new Date(Date.now() + 60 * 60000));
+        expiryField.value = toLocalInput(new Date(Date.now() + 5 * 60 * 60000));
+
+        showToast('Donation listed');
         loadMyDonations();
       } catch (err) {
-        document.getElementById('donationAlert').innerHTML = `
-          <div class="alert alert-danger">❌ Failed to submit donation. Please try again.</div>`;
+        showAlert(apiErrorMessage(err, "The listing didn't go through. Check the fields and try again."));
       } finally {
-        btn.textContent = '🤝 Submit Donation';
+        btn.textContent = 'List this donation';
         btn.disabled = false;
       }
     });
 
+    /* ---------- my donations ---------- */
     async function loadMyDonations() {
+      const list = document.getElementById('donationsList');
+
       if (!Auth.isLoggedIn()) {
-        document.getElementById('donationsList').innerHTML = `
+        list.innerHTML = `
           <div class="empty-state">
             <div class="empty-state-icon">🔐</div>
-            <div class="empty-state-title">Login to see your donations</div>
-            <a href="login.html" class="btn btn-primary" style="margin-top:1rem;">Login</a>
+            <div class="empty-state-title">Log in to see your donations</div>
+            <a href="login.html" class="btn btn-primary" style="margin-top:1rem;">Log in</a>
           </div>`;
         return;
       }
@@ -546,81 +592,91 @@
         const donations = await Api.get('/donations/my-donations/');
 
         if (donations.length === 0) {
-          document.getElementById('donationsList').innerHTML = `
+          list.innerHTML = `
             <div class="empty-state">
               <div class="empty-state-icon">🤝</div>
-              <div class="empty-state-title">No donations yet</div>
-              <p>Submit your first donation above!</p>
+              <div class="empty-state-title">Nothing listed yet</div>
+              <p>${canDonate ? 'Use the form above to list your first donation.' : 'Donor accounts can list surplus food here.'}</p>
             </div>`;
           return;
         }
 
-        // Show preview in sidebar
-        if (donations.length > 0) {
-          document.getElementById('myDonationsCard').style.display = 'block';
-          document.getElementById('myDonationsList').innerHTML = donations.slice(0, 2).map(d => `
-            <div style="display:flex;justify-content:space-between;align-items:center;padding:0.6rem 0;border-bottom:1px solid var(--border);">
-              <div>
-                <div style="font-weight:600;font-size:0.88rem;">${d.food_name}</div>
-                <div style="font-size:0.78rem;color:var(--text-muted);">${d.quantity}</div>
-              </div>
-              ${getDonationBadge(d.status)}
+        document.getElementById('myDonationsCard').style.display = 'block';
+        document.getElementById('myDonationsList').innerHTML = donations.slice(0, 3).map(d => `
+          <div class="mini-donation">
+            <div style="min-width:0;">
+              <div style="font-weight:600;font-size:0.87rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${esc(d.food_name)}</div>
+              <div style="font-size:0.77rem;color:var(--c-muted);">${esc(d.quantity)}</div>
             </div>
-          `).join('');
-        }
+            ${getDonationBadge(d.status)}
+          </div>`).join('');
 
-        document.getElementById('donationsList').innerHTML = donations.map(d => `
-          <div class="donation-item-card">
-            <div style="font-size:2rem;">🤝</div>
-            <div class="donation-info">
-              <div class="donation-name">${d.food_name}</div>
+        // Everything below is donor-written text, so escape it before rendering
+        list.innerHTML = donations.map(d => {
+          const address = d.pickup_address || '';
+          const shortAddress = address.length > 45 ? address.slice(0, 45) + '…' : address;
+          return `
+          <article class="donation-item-card">
+            <div class="donation-emoji" style="font-size:1.8rem;">🤝</div>
+            <div>
+              <h3 class="donation-name">${esc(d.food_name)}</h3>
               <div class="donation-meta">
-                <span>📦 ${d.quantity}</span>
-                <span>🍱 ${d.food_type.replace('_', ' ')}</span>
-                <span>📍 ${d.pickup_address.substring(0, 40)}...</span>
-                <span>📅 ${formatDate(d.created_at)}</span>
+                <span>📦 ${esc(d.quantity)}</span>
+                <span>🍱 ${esc(FOOD_TYPE_LABELS[d.food_type] || d.food_type)}</span>
+                <span>📍 ${esc(shortAddress)}</span>
+                <span>🕒 Pickup ${formatDate(d.pickup_time)}</span>
               </div>
-              ${d.admin_note ? `<div style="margin-top:0.5rem;font-size:0.83rem;color:var(--text-secondary);">📝 Admin Note: ${d.admin_note}</div>` : ''}
+              ${d.admin_note ? `<div class="admin-note">Note from admin: ${esc(d.admin_note)}</div>` : ''}
             </div>
             <div>${getDonationBadge(d.status)}</div>
-          </div>
-        `).join('');
+          </article>`;
+        }).join('');
+
+        // Real numbers instead of made-up ones
+        document.getElementById('statDonations').textContent = donations.length;
+        document.getElementById('statDistributed').textContent =
+          donations.filter(d => d.status === 'distributed').length;
       } catch (e) {
-        document.getElementById('donationsList').innerHTML = `
+        if (e.status === 401) return;
+        list.innerHTML = `
           <div class="empty-state">
             <div class="empty-state-icon">😕</div>
-            <div class="empty-state-title">Could not load donations</div>
+            <div class="empty-state-title">Donations didn't load</div>
+            <p style="margin-bottom:1rem;">${esc(apiErrorMessage(e, 'Try again in a moment.'))}</p>
+            <button class="btn btn-primary" onclick="loadMyDonations()">Retry</button>
           </div>`;
       }
     }
 
+    /* ---------- rescue centers ---------- */
     async function loadRescueCenters() {
+      const container = document.getElementById('rescueCentersList');
       try {
         const centers = await Api.get('/donations/rescue-centers/', false);
-        const container = document.getElementById('rescueCentersList');
+        document.getElementById('statCenters').textContent = centers.length;
 
         if (centers.length === 0) {
-          container.innerHTML = `<div class="empty-state"><p>No rescue centers registered yet</p></div>`;
+          container.innerHTML = `<div class="empty-state"><p>No rescue centres listed yet.</p></div>`;
           return;
         }
 
         container.innerHTML = centers.map(c => `
-          <div class="rescue-center-card">
-            <div style="font-size:2rem;margin-bottom:0.75rem;">🏥</div>
-            <div style="font-weight:700;margin-bottom:0.4rem;">${c.name}</div>
-            <div style="font-size:0.85rem;color:var(--text-secondary);margin-bottom:0.75rem;line-height:1.5;">${c.address}</div>
-            <div style="font-size:0.83rem;color:var(--text-muted);">
-              <div>👤 ${c.contact_person}</div>
-              <div>📞 ${c.phone}</div>
-              ${c.email ? `<div>📧 ${c.email}</div>` : ''}
+          <article class="rescue-center-card">
+            <div style="font-size:1.7rem;margin-bottom:0.6rem;">🏥</div>
+            <h3 style="font-weight:700;margin-bottom:0.35rem;font-size:0.98rem;">${esc(c.name)}</h3>
+            <p style="font-size:0.85rem;color:var(--c-text2);margin-bottom:0.7rem;line-height:1.5;">${esc(c.address)}</p>
+            <div style="font-size:0.83rem;color:var(--c-muted);display:flex;flex-direction:column;gap:0.2rem;">
+              <span>👤 ${esc(c.contact_person)}</span>
+              <span>📞 <a href="tel:${esc(c.phone)}" style="color:inherit;">${esc(c.phone)}</a></span>
+              ${c.email ? `<span>📧 <a href="mailto:${esc(c.email)}" style="color:inherit;">${esc(c.email)}</a></span>` : ''}
             </div>
-          </div>
-        `).join('');
+          </article>`).join('');
       } catch (e) {
-        document.getElementById('rescueCentersList').innerHTML = `<p style="color:var(--text-muted);">Could not load rescue centers</p>`;
+        container.innerHTML = `<p style="color:var(--c-muted);">Rescue centres didn't load.</p>`;
       }
     }
 
+    validateTimes();
     loadMyDonations();
     loadRescueCenters();
   </script>

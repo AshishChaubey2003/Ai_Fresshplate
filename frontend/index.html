@@ -6,298 +6,248 @@
     <title>FreshPlate — Cloud Kitchen & Food Rescue</title>
     <link rel="stylesheet" href="css/style.css" />
     <style>
-      /* HERO */
+      .page-wrapper {
+        --c-primary: var(--primary, #ff6b35);
+        --c-secondary: var(--secondary, #2d4a3e);
+        --c-border: var(--border, #e6e8ec);
+        --c-muted: var(--text-muted, #8a8f98);
+        --c-text2: var(--text-secondary, #5b6068);
+      }
+
+      /* ---------- HERO ---------- */
       .hero {
-        min-height: 100vh;
-        background: linear-gradient(
-          135deg,
-          #fff5f0 0%,
-          #f0f7f4 60%,
-          #fff5f0 100%
-        );
+        min-height: min(100svh, 760px);
+        background: linear-gradient(135deg, #fff5f0 0%, #f0f7f4 60%, #fff5f0 100%);
         display: flex;
         align-items: center;
         position: relative;
         overflow: hidden;
-        padding-top: 70px;
+        padding: calc(70px + 2.5rem) 0 3rem;
       }
+
       .hero::before {
         content: "";
         position: absolute;
         width: 600px;
         height: 600px;
-        background: radial-gradient(
-          circle,
-          rgba(255, 107, 53, 0.08) 0%,
-          transparent 70%
-        );
+        background: radial-gradient(circle, rgba(255,107,53,0.08) 0%, transparent 70%);
         top: -100px;
         right: -100px;
         border-radius: 50%;
       }
+
       .hero::after {
         content: "";
         position: absolute;
         width: 400px;
         height: 400px;
-        background: radial-gradient(
-          circle,
-          rgba(45, 74, 62, 0.07) 0%,
-          transparent 70%
-        );
+        background: radial-gradient(circle, rgba(45,74,62,0.07) 0%, transparent 70%);
         bottom: -100px;
         left: -50px;
         border-radius: 50%;
       }
-      .hero-content {
-        position: relative;
-        z-index: 1;
-        max-width: 600px;
-      }
+
+      .hero-content { position: relative; z-index: 1; max-width: 620px; }
+
       .hero-badge {
         display: inline-flex;
         align-items: center;
         gap: 0.5rem;
-        background: rgba(255, 107, 53, 0.1);
-        color: var(--primary);
+        background: rgba(255,107,53,0.1);
+        color: var(--c-primary);
         padding: 6px 16px;
         border-radius: 20px;
-        font-size: 0.85rem;
+        font-size: 0.83rem;
         font-weight: 600;
-        margin-bottom: 1.5rem;
-        border: 1px solid rgba(255, 107, 53, 0.2);
+        margin-bottom: 1.25rem;
+        border: 1px solid rgba(255,107,53,0.2);
       }
+
       .hero h1 {
-        font-size: 3.8rem;
+        font-size: clamp(2.1rem, 1.4rem + 3.2vw, 3.6rem);
         font-weight: 700;
         line-height: 1.1;
-        margin-bottom: 1.5rem;
-        color: var(--text-primary);
+        margin-bottom: 1.25rem;
       }
-      .hero h1 span {
-        color: var(--primary);
-      }
+
+      .hero h1 span { color: var(--c-primary); }
+
       .hero p {
-        font-size: 1.15rem;
-        color: var(--text-secondary);
-        margin-bottom: 2.5rem;
-        line-height: 1.8;
+        font-size: clamp(1rem, 0.95rem + 0.3vw, 1.12rem);
+        color: var(--c-text2);
+        margin-bottom: 2rem;
+        line-height: 1.75;
+        max-width: 52ch;
       }
-      .hero-btns {
-        display: flex;
-        gap: 1rem;
-        flex-wrap: wrap;
-      }
+
+      .hero-btns { display: flex; gap: 0.85rem; flex-wrap: wrap; }
+
       .hero-img {
         position: absolute;
         right: 5%;
         top: 50%;
         transform: translateY(-50%);
-        font-size: 12rem;
-        animation: float 4s ease-in-out infinite;
-        z-index: 1;
+        font-size: clamp(6rem, 12vw, 11rem);
+        animation: float 5s ease-in-out infinite;
+        z-index: 0;
       }
+
       @keyframes float {
-        0%,
-        100% {
-          transform: translateY(-50%) rotate(-5deg);
-        }
-        50% {
-          transform: translateY(-55%) rotate(5deg);
-        }
+        0%, 100% { transform: translateY(-50%) rotate(-5deg); }
+        50% { transform: translateY(-56%) rotate(5deg); }
       }
+
       .hero-stats {
         display: flex;
-        gap: 2.5rem;
-        margin-top: 3rem;
+        gap: clamp(1.25rem, 4vw, 2.5rem);
+        margin-top: 2.5rem;
+        flex-wrap: wrap;
       }
-      .stat {
-        text-align: left;
-      }
+
       .stat-num {
-        font-family: "Playfair Display", serif;
-        font-size: 2rem;
+        font-size: clamp(1.5rem, 1.2rem + 1vw, 2rem);
         font-weight: 700;
-        color: var(--primary);
-      }
-      .stat-label {
-        font-size: 0.85rem;
-        color: var(--text-muted);
+        color: var(--c-primary);
+        line-height: 1.15;
       }
 
-      /* FEATURES */
-      .features-grid {
-        display: grid;
-        grid-template-columns: repeat(4, 1fr);
-        gap: 1.5rem;
-      }
-      .feature-card {
-        background: white;
-        border-radius: var(--radius-md);
-        padding: 2rem 1.5rem;
-        text-align: center;
-        border: 1px solid var(--border);
-        transition: all 0.3s;
-      }
-      .feature-card:hover {
-        transform: translateY(-6px);
-        box-shadow: var(--shadow-md);
-        border-color: var(--primary);
-      }
-      .feature-icon {
-        font-size: 2.5rem;
-        margin-bottom: 1rem;
-        display: block;
-      }
-      .feature-title {
-        font-size: 1.05rem;
-        font-weight: 600;
-        margin-bottom: 0.5rem;
-      }
-      .feature-desc {
-        font-size: 0.87rem;
-        color: var(--text-secondary);
-        line-height: 1.6;
-      }
+      .stat-label { font-size: 0.83rem; color: var(--c-muted); }
 
-      /* POPULAR SECTION */
-      .food-grid {
-        display: grid;
-        grid-template-columns: repeat(4, 1fr);
-        gap: 1.5rem;
-      }
-
-      /* HOW IT WORKS */
+      /* ---------- GRIDS ---------- */
+      .features-grid,
+      .food-grid,
       .steps-grid {
         display: grid;
-        grid-template-columns: repeat(4, 1fr);
-        gap: 1.5rem;
-        position: relative;
+        gap: 1.25rem;
       }
-      .steps-grid::before {
-        content: "";
-        position: absolute;
-        top: 40px;
-        left: 10%;
-        right: 10%;
-        height: 2px;
-        background: linear-gradient(90deg, var(--primary), var(--secondary));
-        opacity: 0.2;
-      }
-      .step-card {
+
+      .features-grid { grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
+      .food-grid { grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); }
+      .steps-grid { grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); }
+
+      .feature-card {
+        background: #fff;
+        border-radius: 14px;
+        padding: 1.6rem 1.25rem;
         text-align: center;
-        padding: 2rem 1rem;
-        position: relative;
+        border: 1px solid var(--c-border);
       }
+
+      .feature-card:hover { border-color: var(--c-primary); }
+
+      .feature-icon { font-size: 2.1rem; margin-bottom: 0.85rem; display: block; }
+      .feature-title { font-size: 1rem; font-weight: 650; margin-bottom: 0.4rem; }
+      .feature-desc { font-size: 0.86rem; color: var(--c-text2); line-height: 1.6; }
+
+      /* ---------- STEPS ---------- */
+      .step-card { text-align: center; padding: 1.5rem 0.75rem; }
+
       .step-num {
-        width: 64px;
-        height: 64px;
-        background: linear-gradient(
-          135deg,
-          var(--primary),
-          var(--primary-dark)
-        );
-        color: white;
+        width: 56px;
+        height: 56px;
+        background: linear-gradient(135deg, var(--c-primary), var(--primary-dark, #e85a24));
+        color: #fff;
         border-radius: 50%;
         display: flex;
         align-items: center;
         justify-content: center;
-        font-family: "Playfair Display", serif;
-        font-size: 1.4rem;
+        font-size: 1.25rem;
         font-weight: 700;
-        margin: 0 auto 1rem;
-        box-shadow: 0 8px 24px rgba(255, 107, 53, 0.3);
-      }
-      .step-title {
-        font-size: 1rem;
-        font-weight: 600;
-        margin-bottom: 0.5rem;
-      }
-      .step-desc {
-        font-size: 0.87rem;
-        color: var(--text-secondary);
+        margin: 0 auto 0.9rem;
       }
 
-      /* DONATION CTA */
+      .step-title { font-size: 0.98rem; font-weight: 650; margin-bottom: 0.4rem; }
+      .step-desc { font-size: 0.86rem; color: var(--c-text2); line-height: 1.55; }
+
+      /* ---------- SECTION HEADER ---------- */
+      .section-head {
+        display: flex;
+        align-items: end;
+        justify-content: space-between;
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+        flex-wrap: wrap;
+      }
+
+      /* ---------- DONATION CTA ---------- */
       .donation-cta {
-        background: linear-gradient(
-          135deg,
-          var(--secondary) 0%,
-          var(--secondary-light) 100%
-        );
-        border-radius: var(--radius-xl);
-        padding: 4rem;
+        background: linear-gradient(135deg, var(--c-secondary) 0%, var(--secondary-light, #3d6152) 100%);
+        border-radius: 20px;
+        padding: clamp(1.75rem, 4vw, 3.5rem);
         display: flex;
         align-items: center;
         justify-content: space-between;
-        gap: 2rem;
+        gap: 1.75rem;
         position: relative;
         overflow: hidden;
+        flex-wrap: wrap;
       }
+
       .donation-cta::before {
         content: "🤝";
         position: absolute;
-        font-size: 10rem;
-        right: 5%;
+        font-size: 9rem;
+        right: 4%;
         top: 50%;
         transform: translateY(-50%);
         opacity: 0.1;
       }
+
+      .donation-cta-text { position: relative; z-index: 1; }
+
       .donation-cta-text h2 {
-        font-size: 2.2rem;
-        color: white;
-        margin-bottom: 1rem;
+        font-size: clamp(1.4rem, 1.1rem + 1.4vw, 2rem);
+        color: #fff;
+        margin-bottom: 0.8rem;
+        line-height: 1.25;
       }
+
       .donation-cta-text p {
-        color: rgba(255, 255, 255, 0.75);
-        font-size: 1rem;
-        max-width: 500px;
+        color: rgba(255,255,255,0.78);
+        font-size: 0.97rem;
+        max-width: 48ch;
+        line-height: 1.7;
       }
-      .donation-cta-btns {
-        display: flex;
-        gap: 1rem;
-        flex-shrink: 0;
+
+      .donation-cta-btns { display: flex; gap: 0.85rem; flex-wrap: wrap; position: relative; z-index: 1; }
+
+      /* ---------- SKELETON ---------- */
+      .card-skeleton {
+        height: 300px;
+        border-radius: 14px;
+        background: linear-gradient(90deg, #eef0f4 25%, #f6f7f9 50%, #eef0f4 75%);
+        background-size: 200% 100%;
+        animation: shimmer 1.2s infinite;
+      }
+
+      @keyframes shimmer {
+        0% { background-position: 200% 0; }
+        100% { background-position: -200% 0; }
       }
 
       @media (max-width: 1024px) {
-        .features-grid,
-        .food-grid,
-        .steps-grid {
-          grid-template-columns: repeat(2, 1fr);
-        }
-        .hero h1 {
-          font-size: 2.8rem;
-        }
-        .hero-img {
-          display: none;
-        }
+        .hero-img { display: none; }
       }
+
       @media (max-width: 768px) {
-        .hero {
-          text-align: center;
-        }
-        .hero-content {
-          max-width: 100%;
-        }
-        .hero-btns,
-        .hero-stats {
-          justify-content: center;
-        }
-        .hero h1 {
-          font-size: 2.2rem;
-        }
-        .features-grid,
-        .food-grid,
-        .steps-grid {
-          grid-template-columns: 1fr;
-        }
-        .donation-cta {
-          flex-direction: column;
-          text-align: center;
-        }
-        .donation-cta-btns {
-          flex-direction: column;
-        }
+        .hero { text-align: center; }
+        .hero-content { max-width: 100%; }
+        .hero p { margin-left: auto; margin-right: auto; }
+        .hero-btns, .hero-stats { justify-content: center; }
+        .donation-cta { flex-direction: column; text-align: center; }
+        .donation-cta-btns { width: 100%; flex-direction: column; }
+        .donation-cta-btns .btn { width: 100%; }
+      }
+
+      :focus-visible {
+        outline: 2px solid var(--c-primary);
+        outline-offset: 2px;
+        border-radius: 6px;
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        .hero-img { animation: none; }
+        .card-skeleton { animation: none; }
       }
     </style>
   </head>
@@ -321,79 +271,61 @@
       <section class="hero">
         <div class="container">
           <div class="hero-content">
-            <div class="hero-badge">
-              🍽️ Cloud Kitchen & Food Rescue Platform
-            </div>
-            <h1>Fresh Food,<br /><span>Zero Waste</span>,<br />Delivered.</h1>
+            <div class="hero-badge">🍽️ Cloud kitchen &amp; food rescue</div>
+            <h1>Fresh food,<br /><span>zero waste</span>,<br />delivered.</h1>
             <p>
-              Order delicious freshly prepared meals from our cloud kitchen.
-              Every order helps us rescue surplus food and feed those in need.
+              Order freshly cooked meals from our kitchen. Surplus food that would
+              have been thrown away gets listed here instead, and volunteers take it
+              to people who need it.
             </p>
             <div class="hero-btns">
-              <a href="menu.html" class="btn btn-primary btn-lg"
-                >🍕 Order Now</a
-              >
-              <a href="donation.html" class="btn btn-secondary btn-lg"
-                >🤝 Donate Food</a
-              >
+              <a href="menu.html" class="btn btn-primary btn-lg">See the menu</a>
+              <a href="donation.html" class="btn btn-secondary btn-lg">Donate surplus food</a>
             </div>
-            <div class="hero-stats">
+            <div class="hero-stats" id="heroStats" style="display:none;">
               <div class="stat">
-                <div class="stat-num">500+</div>
-                <div class="stat-label">Happy Customers</div>
+                <div class="stat-num" id="statDishes">–</div>
+                <div class="stat-label">Dishes on the menu</div>
               </div>
               <div class="stat">
-                <div class="stat-num">1200+</div>
-                <div class="stat-label">Meals Served</div>
+                <div class="stat-num" id="statRescue">–</div>
+                <div class="stat-label">Rescue deals today</div>
               </div>
               <div class="stat">
-                <div class="stat-num">300kg</div>
-                <div class="stat-label">Food Rescued</div>
+                <div class="stat-num" id="statCenters">–</div>
+                <div class="stat-label">Rescue centres</div>
               </div>
             </div>
           </div>
-          <div class="hero-img">🍱</div>
+          <div class="hero-img" aria-hidden="true">🍱</div>
         </div>
       </section>
 
       <!-- FEATURES -->
-      <section class="section" style="background: white">
+      <section class="section" style="background: #fff">
         <div class="container">
-          <h2 class="section-title">Why Choose FreshPlate?</h2>
-          <p class="section-subtitle">
-            More than just food delivery — we're a movement.
-          </p>
+          <h2 class="section-title">What FreshPlate does</h2>
+          <p class="section-subtitle">A kitchen and a food rescue network in one place.</p>
           <div class="features-grid">
             <div class="feature-card">
               <span class="feature-icon">👨‍🍳</span>
-              <h3 class="feature-title">Cloud Kitchen</h3>
-              <p class="feature-desc">
-                Freshly prepared meals by professional chefs using quality
-                ingredients.
-              </p>
+              <h3 class="feature-title">Cooked after you order</h3>
+              <p class="feature-desc">Nothing sits in a warmer. Each dish is prepared once the order comes in.</p>
             </div>
             <div class="feature-card">
               <span class="feature-icon">🚴</span>
-              <h3 class="feature-title">Fast Delivery</h3>
-              <p class="feature-desc">
-                Get your food delivered hot and fresh within 30-45 minutes.
-              </p>
+              <h3 class="feature-title">Tracked delivery</h3>
+              <p class="feature-desc">Follow your order from confirmed to delivered on the orders page.</p>
             </div>
             <div class="feature-card">
               <span class="feature-icon">🤝</span>
-              <h3 class="feature-title">Food Rescue</h3>
-              <p class="feature-desc">
-                We rescue surplus food and distribute it to those who need it
-                most.
-              </p>
+              <h3 class="feature-title">Food rescue</h3>
+              <p class="feature-desc">List surplus food and a rescue centre collects it instead of it being binned.</p>
             </div>
             <div class="feature-card">
               <span class="feature-icon">🤖</span>
-              <h3 class="feature-title">AI Assistant</h3>
-              <p class="feature-desc">
-                Get personalized food recommendations from our AI-powered
-                chatbot.
-              </p>
+              <h3 class="feature-title">An assistant that knows the menu</h3>
+              <p class="feature-desc">Ask what to eat or where your order has reached, and get a real answer.</p>
             </div>
           </div>
         </div>
@@ -402,61 +334,63 @@
       <!-- POPULAR ITEMS -->
       <section class="section">
         <div class="container">
-          <div
-            style="
-              display: flex;
-              align-items: center;
-              justify-content: space-between;
-              margin-bottom: 2rem;
-            "
-          >
+          <div class="section-head">
             <div>
-              <h2 class="section-title">Popular Today</h2>
-              <p class="section-subtitle" style="margin-bottom: 0">
-                Our most loved dishes
-              </p>
+              <h2 class="section-title" style="margin-bottom:0.3rem;">Ordered most often</h2>
+              <p class="section-subtitle" style="margin-bottom: 0">What people keep coming back for.</p>
             </div>
-            <a href="menu.html" class="btn btn-outline">View Full Menu →</a>
+            <a href="menu.html" class="btn btn-outline">Full menu</a>
           </div>
           <div class="food-grid" id="popularItems">
-            <div class="loading-container"><div class="spinner"></div></div>
+            <div class="card-skeleton"></div>
+            <div class="card-skeleton"></div>
+            <div class="card-skeleton"></div>
+            <div class="card-skeleton"></div>
           </div>
         </div>
       </section>
 
-      <!-- HOW IT WORKS -->
-      <section class="section" style="background: white">
+      <!-- RESCUE DEALS -->
+      <section class="section" id="rescueSection" style="background:#fff;display:none;">
         <div class="container">
-          <h2 class="section-title">How It Works</h2>
-          <p class="section-subtitle">Order in 4 simple steps</p>
+          <div class="section-head">
+            <div>
+              <h2 class="section-title" style="margin-bottom:0.3rem;">Rescue deals</h2>
+              <p class="section-subtitle" style="margin-bottom: 0">
+                Surplus dishes going cheap so they don't get wasted.
+              </p>
+            </div>
+            <a href="menu.html?status=rescue" class="btn btn-outline">See all</a>
+          </div>
+          <div class="food-grid" id="rescueItems"></div>
+        </div>
+      </section>
+
+      <!-- HOW IT WORKS -->
+      <section class="section">
+        <div class="container">
+          <h2 class="section-title">Ordering, step by step</h2>
+          <p class="section-subtitle">Four steps from hungry to fed.</p>
           <div class="steps-grid">
             <div class="step-card">
               <div class="step-num">1</div>
-              <h3 class="step-title">Browse Menu</h3>
-              <p class="step-desc">
-                Explore our wide variety of freshly prepared meals
-              </p>
+              <h3 class="step-title">Browse the menu</h3>
+              <p class="step-desc">Filter by veg, category or search for a dish.</p>
             </div>
             <div class="step-card">
               <div class="step-num">2</div>
-              <h3 class="step-title">Add to Cart</h3>
-              <p class="step-desc">
-                Select your favourite items and add them to cart
-              </p>
+              <h3 class="step-title">Fill your cart</h3>
+              <p class="step-desc">Adjust quantities and see the total before you commit.</p>
             </div>
             <div class="step-card">
               <div class="step-num">3</div>
-              <h3 class="step-title">Place Order</h3>
-              <p class="step-desc">
-                Confirm your order and enter delivery details
-              </p>
+              <h3 class="step-title">Add your address</h3>
+              <p class="step-desc">Pay cash on delivery and place the order.</p>
             </div>
             <div class="step-card">
               <div class="step-num">4</div>
-              <h3 class="step-title">Get Delivered</h3>
-              <p class="step-desc">
-                Hot, fresh food at your doorstep in 30-45 mins
-              </p>
+              <h3 class="step-title">Track it</h3>
+              <p class="step-desc">Watch it move from preparing to out for delivery.</p>
             </div>
           </div>
         </div>
@@ -467,22 +401,16 @@
         <div class="container">
           <div class="donation-cta">
             <div class="donation-cta-text">
-              <h2>Have Surplus Food?<br />Don't Let It Go to Waste!</h2>
+              <h2>Cooked too much?<br />Someone nearby hasn't eaten.</h2>
               <p>
-                Join our food rescue program. Donate surplus food and help us
-                feed hundreds of people in need every day.
+                List surplus food with a pickup time. An admin reviews it and a rescue
+                centre collects it, usually the same day.
               </p>
             </div>
             <div class="donation-cta-btns">
-              <a href="donation.html" class="btn btn-primary btn-lg"
-                >Donate Food 🤝</a
-              >
-              <a
-                href="register.html"
-                class="btn btn-outline btn-lg"
-                style="border-color: rgba(255, 255, 255, 0.5); color: white"
-                >Join as Donor</a
-              >
+              <a href="donation.html" class="btn btn-primary btn-lg">List surplus food</a>
+              <a href="register.html" class="btn btn-outline btn-lg"
+                 style="border-color: rgba(255,255,255,0.5); color: #fff">Create a donor account</a>
             </div>
           </div>
         </div>
@@ -494,129 +422,105 @@
       <div class="container">
         <div class="footer-grid">
           <div>
-            <div class="footer-brand">
-              Fresh<span style="color: var(--primary)">Plate</span>
-            </div>
+            <div class="footer-brand">Fresh<span style="color: var(--primary)">Plate</span></div>
             <p class="footer-desc">
-              Cloud Kitchen & Food Rescue Platform. Serving fresh meals while
-              fighting food waste, one plate at a time.
+              A cloud kitchen that also runs a food rescue network — fresh meals on one
+              side, surplus food finding people on the other.
             </p>
           </div>
           <div>
-            <div class="footer-title">Quick Links</div>
+            <div class="footer-title">Order</div>
             <ul class="footer-links">
               <li><a href="menu.html">Menu</a></li>
-              <li><a href="orders.html">My Orders</a></li>
               <li><a href="cart.html">Cart</a></li>
+              <li><a href="orders.html">My orders</a></li>
             </ul>
           </div>
           <div>
-            <div class="footer-title">Programs</div>
+            <div class="footer-title">Rescue</div>
             <ul class="footer-links">
-              <li><a href="donation.html">Donate Food</a></li>
-              <li><a href="chatbot.html">AI Assistant</a></li>
+              <li><a href="donation.html">Donate food</a></li>
+              <li><a href="chatbot.html">AI assistant</a></li>
             </ul>
           </div>
           <div>
             <div class="footer-title">Account</div>
             <ul class="footer-links">
-              <li><a href="login.html">Login</a></li>
-              <li><a href="register.html">Sign Up</a></li>
-              <li><a href="dashboard.html">Dashboard</a></li>
+              <li><a href="login.html">Log in</a></li>
+              <li><a href="register.html">Sign up</a></li>
+              <li><a href="dashboard.html">Admin dashboard</a></li>
             </ul>
           </div>
         </div>
         <div class="footer-bottom">
-          © 2025 FreshPlate. All rights reserved. Made with ❤️ to fight food
-          waste.
+          © <span id="year"></span> FreshPlate. Built to cut food waste.
         </div>
       </div>
     </footer>
 
     <script src="javascript/main.js"></script>
     <script>
+      document.getElementById("year").textContent = new Date().getFullYear();
+
+      // The API returns items ordered by total_orders, so the first four really are
+      // the most ordered. No ordering/page_size params - the backend ignores those.
       async function loadPopularItems() {
+        const container = document.getElementById("popularItems");
         try {
-          const data = await Api.get(
-            "/food/items/?ordering=-rating&page_size=4",
-            false,
-          );
-          const items = data.results || data;
+          const items = await Api.get("/food/items/", false);
+
           if (!items.length) {
-            document.getElementById("popularItems").innerHTML =
-              '<div class="empty-state"><div class="empty-state-icon">🍽️</div><p>No items available</p></div>';
+            container.innerHTML = `
+              <div class="empty-state" style="grid-column:1/-1;">
+                <div class="empty-state-icon">🍽️</div>
+                <div class="empty-state-title">The menu is empty right now</div>
+                <p>Dishes will show up here once the kitchen adds them.</p>
+              </div>`;
             return;
           }
-          document.getElementById("popularItems").innerHTML = items
-            .slice(0, 4)
-            .map(createFoodCard)
-            .join("");
+
+          container.innerHTML = items.slice(0, 4).map(createFoodCard).join("");
+          document.getElementById("statDishes").textContent = items.length;
+          document.getElementById("heroStats").style.display = "flex";
         } catch (e) {
-          document.getElementById("popularItems").innerHTML = `
-          ${[
-            {
-              id: 1,
-              name: "Dal Makhani",
-              description: "Creamy black lentils slow cooked overnight",
-              price: "180",
-              discount_price: "150",
-              is_veg: true,
-              preparation_time: 20,
-              rating: "4.8",
-              calories: 320,
-              status: "regular",
-              final_price: "150",
-              image: "",
-            },
-            {
-              id: 2,
-              name: "Paneer Tikka",
-              description: "Marinated cottage cheese grilled to perfection",
-              price: "220",
-              discount_price: "190",
-              is_veg: true,
-              preparation_time: 25,
-              rating: "4.7",
-              calories: 280,
-              status: "regular",
-              final_price: "190",
-              image: "",
-            },
-            {
-              id: 3,
-              name: "Chicken Biryani",
-              description: "Aromatic basmati rice with tender chicken",
-              price: "280",
-              discount_price: null,
-              is_veg: false,
-              preparation_time: 35,
-              rating: "4.9",
-              calories: 550,
-              status: "regular",
-              final_price: "280",
-              image: "",
-            },
-            {
-              id: 4,
-              name: "Veg Thali",
-              description:
-                "Complete meal with roti, sabzi, dal, rice & dessert",
-              price: "199",
-              discount_price: null,
-              is_veg: true,
-              preparation_time: 15,
-              rating: "4.6",
-              calories: 700,
-              status: "regular",
-              final_price: "199",
-              image: "",
-            },
-          ]
-            .map(createFoodCard)
-            .join("")}`;
+          // Never show fake dishes - a customer could try to order something that
+          // does not exist. Say what went wrong and offer a retry instead.
+          container.innerHTML = `
+            <div class="empty-state" style="grid-column:1/-1;">
+              <div class="empty-state-icon">📡</div>
+              <div class="empty-state-title">Menu didn't load</div>
+              <p style="margin-bottom:1rem;">${esc(apiErrorMessage(e, "The kitchen server isn't responding."))}</p>
+              <button class="btn btn-primary" onclick="loadPopularItems()">Try again</button>
+            </div>`;
         }
       }
+
+      async function loadRescueItems() {
+        try {
+          const items = await Api.get("/food/rescue/", false);
+          document.getElementById("statRescue").textContent = items.length;
+          if (!items.length) return;
+
+          document.getElementById("rescueItems").innerHTML =
+            items.slice(0, 4).map(createFoodCard).join("");
+          document.getElementById("rescueSection").style.display = "block";
+        } catch (e) {
+          // Optional section - stay silent if it fails
+        }
+      }
+
+      async function loadRescueCentreCount() {
+        try {
+          const centers = await Api.get("/donations/rescue-centers/", false);
+          document.getElementById("statCenters").textContent = centers.length;
+        } catch (e) {
+          document.getElementById("statCenters").textContent = "–";
+        }
+      }
+
       loadPopularItems();
+      loadRescueItems();
+      loadRescueCentreCount();
     </script>
   </body>
 </html>

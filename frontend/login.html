@@ -3,23 +3,30 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Login — FreshPlate</title>
+  <title>Log in — FreshPlate</title>
   <link rel="stylesheet" href="css/style.css">
   <style>
     .auth-page {
-      min-height: 100vh;
+      --c-primary: var(--primary, #ff6b35);
+      --c-secondary: var(--secondary, #2d4a3e);
+      --c-bg: var(--bg, #f8f9fb);
+      --c-border: var(--border, #e6e8ec);
+      --c-muted: var(--text-muted, #8a8f98);
+      --c-text2: var(--text-secondary, #5b6068);
+
+      min-height: 100svh;
       display: grid;
       grid-template-columns: 1fr 1fr;
     }
 
     .auth-left {
-      background: linear-gradient(135deg, var(--secondary) 0%, var(--secondary-light) 100%);
+      background: linear-gradient(135deg, var(--c-secondary) 0%, var(--secondary-light, #3d6152) 100%);
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
       padding: 3rem;
-      color: white;
+      color: #fff;
       position: relative;
       overflow: hidden;
     }
@@ -46,35 +53,24 @@
       left: -80px;
     }
 
-    .auth-left-content {
-      position: relative;
-      z-index: 1;
-      text-align: center;
-    }
+    .auth-left-content { position: relative; z-index: 1; text-align: center; max-width: 380px; }
 
     .auth-left-logo {
-      font-family: 'Playfair Display', serif;
-      font-size: 2.5rem;
+      font-size: 2.1rem;
       font-weight: 700;
-      color: white;
-      margin-bottom: 0.5rem;
+      color: #fff;
+      margin-bottom: 0.4rem;
     }
 
-    .auth-left-logo span {
-      color: var(--accent);
-    }
+    .auth-left-logo span { color: var(--accent, #ffd166); }
 
-    .auth-left-tagline {
-      color: rgba(255,255,255,0.7);
-      font-size: 1rem;
-      margin-bottom: 3rem;
-    }
+    .auth-left-tagline { color: rgba(255,255,255,0.72); font-size: 0.95rem; margin-bottom: 2.5rem; }
 
     .auth-left-emoji {
-      font-size: 5rem;
-      margin-bottom: 1.5rem;
+      font-size: 4rem;
+      margin-bottom: 1.25rem;
       display: block;
-      animation: float 3s ease-in-out infinite;
+      animation: float 3.5s ease-in-out infinite;
     }
 
     .auth-left-features {
@@ -82,183 +78,223 @@
       text-align: left;
       display: flex;
       flex-direction: column;
-      gap: 1rem;
+      gap: 0.85rem;
+      padding: 0;
+      margin: 0;
     }
 
     .auth-left-features li {
       display: flex;
-      align-items: center;
-      gap: 0.75rem;
-      color: rgba(255,255,255,0.85);
-      font-size: 0.95rem;
+      align-items: flex-start;
+      gap: 0.7rem;
+      color: rgba(255,255,255,0.86);
+      font-size: 0.92rem;
+      line-height: 1.5;
     }
 
     .auth-right {
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 3rem;
-      background: var(--bg);
+      padding: 2.5rem;
+      background: var(--c-bg);
     }
 
-    .auth-form-card {
-      width: 100%;
-      max-width: 420px;
-    }
+    .auth-form-card { width: 100%; max-width: 400px; }
 
     .auth-form-title {
-      font-size: 2rem;
+      font-size: clamp(1.5rem, 1.2rem + 1.2vw, 1.9rem);
       font-weight: 700;
-      margin-bottom: 0.4rem;
-      color: var(--text-primary);
+      margin-bottom: 0.35rem;
     }
 
-    .auth-form-subtitle {
-      color: var(--text-secondary);
-      margin-bottom: 2rem;
-      font-size: 0.95rem;
-    }
+    .auth-form-subtitle { color: var(--c-text2); margin-bottom: 1.75rem; font-size: 0.93rem; }
 
-    .password-wrapper {
-      position: relative;
-    }
+    .password-wrapper { position: relative; }
+
+    .password-wrapper .form-control { padding-right: 3rem; }
 
     .password-toggle {
       position: absolute;
-      right: 1rem;
+      right: 0.85rem;
       top: 50%;
       transform: translateY(-50%);
       background: none;
       border: none;
       cursor: pointer;
-      font-size: 1.1rem;
-      color: var(--text-muted);
+      font-size: 1.05rem;
+      color: var(--c-muted);
+      padding: 0.25rem;
+      line-height: 1;
+    }
+
+    .auth-divider {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      color: var(--c-muted);
+      font-size: 0.85rem;
+      margin: 1.5rem 0;
+    }
+
+    .auth-divider::before,
+    .auth-divider::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--c-border);
     }
 
     @keyframes float {
       0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(-12px); }
+      50% { transform: translateY(-10px); }
     }
 
-    @media (max-width: 768px) {
+    @media (max-width: 860px) {
       .auth-page { grid-template-columns: 1fr; }
       .auth-left { display: none; }
-      .auth-right { padding: 2rem 1.5rem; align-items: flex-start; padding-top: 5rem; }
+      .auth-right { padding: 2rem 1.25rem; align-items: flex-start; padding-top: 3.5rem; }
+    }
+
+    .auth-page :focus-visible {
+      outline: 2px solid var(--c-primary);
+      outline-offset: 2px;
+      border-radius: 6px;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .auth-left-emoji { animation: none; }
     }
   </style>
 </head>
 <body>
 
   <div class="auth-page">
-    <!-- LEFT SIDE -->
+    <!-- LEFT -->
     <div class="auth-left">
       <div class="auth-left-content">
         <div class="auth-left-logo">Fresh<span>Plate</span></div>
-        <p class="auth-left-tagline">Cloud Kitchen & Food Rescue</p>
-        <span class="auth-left-emoji">🍽️</span>
+        <p class="auth-left-tagline">Cloud kitchen &amp; food rescue</p>
+        <span class="auth-left-emoji" aria-hidden="true">🍽️</span>
         <ul class="auth-left-features">
-          <li>✅ Fresh meals from cloud kitchen</li>
-          <li>✅ Food rescue & donation program</li>
-          <li>✅ AI-powered food assistant</li>
-          <li>✅ Real-time order tracking</li>
-          <li>✅ Secure JWT authentication</li>
+          <li><span aria-hidden="true">🍲</span> Meals cooked after you order, not before</li>
+          <li><span aria-hidden="true">📦</span> Track every order from kitchen to door</li>
+          <li><span aria-hidden="true">🤝</span> List surplus food for a rescue centre to collect</li>
+          <li><span aria-hidden="true">🤖</span> An assistant that knows today's menu</li>
         </ul>
       </div>
     </div>
 
-    <!-- RIGHT SIDE -->
+    <!-- RIGHT -->
     <div class="auth-right">
       <div class="auth-form-card">
-        <div style="margin-bottom:2rem;">
-          <a href="index.html" style="color:var(--text-muted);font-size:0.9rem;">← Back to Home</a>
+        <div style="margin-bottom:1.75rem;">
+          <a href="index.html" style="color:var(--c-muted);font-size:0.88rem;">← Back to home</a>
         </div>
 
-        <h1 class="auth-form-title">Welcome Back! 👋</h1>
-        <p class="auth-form-subtitle">Login to your FreshPlate account</p>
+        <h1 class="auth-form-title">Welcome back</h1>
+        <p class="auth-form-subtitle">Log in to order, track and donate.</p>
 
         <div id="alertBox"></div>
 
-        <form id="loginForm">
+        <form id="loginForm" novalidate>
           <div class="form-group">
-            <label class="form-label">Email Address</label>
-            <input type="email" id="email" class="form-control" placeholder="you@example.com" required>
+            <label class="form-label" for="email">Email</label>
+            <input type="email" id="email" class="form-control" autocomplete="email"
+              placeholder="you@example.com" required>
           </div>
 
           <div class="form-group">
-            <label class="form-label">Password</label>
+            <label class="form-label" for="password">Password</label>
             <div class="password-wrapper">
-              <input type="password" id="password" class="form-control" placeholder="Enter your password" required>
-              <button type="button" class="password-toggle" onclick="togglePassword()">👁️</button>
+              <input type="password" id="password" class="form-control" autocomplete="current-password"
+                placeholder="Your password" required>
+              <button type="button" class="password-toggle" id="pwToggle"
+                onclick="togglePassword()" aria-label="Show password">👁️</button>
             </div>
           </div>
 
           <button type="submit" class="btn btn-primary btn-lg btn-block" id="loginBtn">
-            Login to FreshPlate
+            Log in
           </button>
         </form>
 
         <div class="auth-divider">or</div>
 
-        <p style="text-align:center;color:var(--text-secondary);font-size:0.95rem;">
-          Don't have an account?
-          <a href="register.html" style="color:var(--primary);font-weight:600;">Sign Up Free</a>
+        <p style="text-align:center;color:var(--c-text2);font-size:0.93rem;">
+          New here?
+          <a href="register.html" style="color:var(--primary);font-weight:600;">Create an account</a>
         </p>
-
-        <div style="margin-top:2rem;padding:1rem;background:#f8f8f8;border-radius:var(--radius-sm);font-size:0.85rem;color:var(--text-muted);">
-          <strong>Demo Accounts:</strong><br>
-          Admin: admin@freshplate.com / admin123<br>
-          Customer: customer@freshplate.com / customer123
-        </div>
       </div>
     </div>
   </div>
 
   <script src="javascript/main.js"></script>
   <script>
-    // Redirect if already logged in
+    // Pages can send people here with ?next=cart.html so they land back where they were.
+    // Only same-page file names are accepted - an open redirect would let an attacker
+    // send users to an external phishing page after login.
+    const ALLOWED_NEXT = [
+      'index.html', 'menu.html', 'cart.html', 'orders.html',
+      'donation.html', 'chatbot.html', 'dashboard.html',
+    ];
+
+    function getNextPage() {
+      const next = new URLSearchParams(window.location.search).get('next');
+      return ALLOWED_NEXT.includes(next) ? next : null;
+    }
+
     if (Auth.isLoggedIn()) {
-      window.location.href = 'index.html';
+      window.location.href = getNextPage() || (Auth.isAdmin() ? 'dashboard.html' : 'index.html');
     }
 
     function togglePassword() {
       const input = document.getElementById('password');
-      input.type = input.type === 'password' ? 'text' : 'password';
+      const btn = document.getElementById('pwToggle');
+      const showing = input.type === 'text';
+      input.type = showing ? 'password' : 'text';
+      btn.textContent = showing ? '👁️' : '🙈';
+      btn.setAttribute('aria-label', showing ? 'Show password' : 'Hide password');
     }
 
     function showAlert(message, type = 'danger') {
-      document.getElementById('alertBox').innerHTML = `
-        <div class="alert alert-${type}">
-          ${type === 'danger' ? '❌' : '✅'} ${message}
-        </div>
-      `;
+      document.getElementById('alertBox').innerHTML =
+        `<div class="alert alert-${type}">${esc(message)}</div>`;
     }
 
     document.getElementById('loginForm').addEventListener('submit', async (e) => {
       e.preventDefault();
-      const btn = document.getElementById('loginBtn');
-      btn.textContent = 'Logging in...';
-      btn.disabled = true;
 
-      const email = document.getElementById('email').value;
+      const email = document.getElementById('email').value.trim();
       const password = document.getElementById('password').value;
+
+      if (!email || !password) {
+        showAlert('Enter your email and password.');
+        return;
+      }
+
+      const btn = document.getElementById('loginBtn');
+      btn.textContent = 'Logging in…';
+      btn.disabled = true;
 
       try {
         const data = await Api.post('/users/login/', { email, password }, false);
         Auth.setAuth(data);
-        showAlert('Login successful! Redirecting...', 'success');
-        showToast('Welcome back! 🎉');
+        showAlert('Logged in. Taking you there…', 'success');
+        updateCartCount();
 
-        setTimeout(() => {
-          if (data.user.role === 'admin') {
-            window.location.href = 'dashboard.html';
-          } else {
-            window.location.href = 'index.html';
-          }
-        }, 1000);
+        const target = getNextPage() || (data.user.role === 'admin' ? 'dashboard.html' : 'index.html');
+        setTimeout(() => (window.location.href = target), 700);
       } catch (err) {
-        const msg = err.data?.non_field_errors?.[0] || err.data?.detail || 'Login failed. Please try again.';
-        showAlert(msg);
-        btn.textContent = 'Login to FreshPlate';
+        // The API rate-limits login attempts to slow down brute force
+        const message = err.status === 429
+          ? 'Too many attempts. Wait a minute before trying again.'
+          : apiErrorMessage(err, 'Login failed. Check your email and password.');
+
+        showAlert(message);
+        document.getElementById('password').value = '';
+        document.getElementById('password').focus();
+        btn.textContent = 'Log in';
         btn.disabled = false;
       }
     });
