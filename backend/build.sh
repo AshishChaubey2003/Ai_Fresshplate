@@ -9,14 +9,7 @@ pip install -r requirements.txt
 python manage.py collectstatic --no-input
 python manage.py migrate --no-input
 
-#!/usr/bin/env bash
-set -o errexit
-
-pip install --upgrade pip
-pip install -r requirements.txt
-
-python manage.py collectstatic --no-input
-python manage.py migrate --no-input
-
-# TEMPORARY: seeds the live menu once. Remove after the first successful deploy.
+# TEMPORARY: both lines below are one-time setup for the fresh database.
+# Delete them after the next successful deploy.
 python manage.py seed_menu
+python manage.py createsuperuser --noinput --email admin@freshplate.com --full_name "Admin" || true
