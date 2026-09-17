@@ -1,5 +1,13 @@
 // ===== API CONFIG =====
-const API_BASE = "https://ai-fresshplate.onrender.com/api";
+// Local machine -> local Django server, live site -> Render server
+const IS_LOCAL = ["localhost", "127.0.0.1", ""].includes(
+  window.location.hostname,
+);
+const API_BASE = IS_LOCAL
+  ? "http://127.0.0.1:8000/api"
+  : "https://ai-fresshplate.onrender.com/api";
+
+const REQUEST_TIMEOUT_MS = 30000; // Render free server can take time to wake up
 
 // ===== AUTH HELPERS =====
 const Auth = {
@@ -38,7 +46,8 @@ const Auth = {
 
 // ===== API HELPER =====
 const Api = {
-  async request(endpoint, method = "GET", body = null, auth = true) {
+  // Send one request with a timeout. Returns { res, data }.
+  async _send(endpoint, method, body, auth) {
     const headers = { "Content-Type": "application/json" };
     if (auth && Auth.getToken()) {
       headers["Authorization"] = `Bearer ${Auth.getToken()}`;
@@ -46,14 +55,73 @@ const Api = {
     const config = { method, headers };
     if (body) config.body = JSON.stringify(body);
 
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
+    config.signal = controller.signal;
+
     try {
       const res = await fetch(`${API_BASE}${endpoint}`, config);
-      const data = await res.json();
-      if (!res.ok) throw { status: res.status, data };
-      return data;
+      // Server errors (502/503) often return HTML, so don't crash on res.json()
+      const text = await res.text();
+      let data = {};
+      try {
+        data = text ? JSON.parse(text) : {};
+      } catch {
+        data = { detail: "Server returned an invalid response" };
+      }
+      return { res, data };
     } catch (err) {
-      throw err;
+      if (err.name === "AbortError") {
+        throw {
+          status: 0,
+          data: {
+            detail: "Server is taking too long. Please try again in a minute.",
+          },
+        };
+      }
+      throw { status: 0, data: { detail: "Cannot reach the server." } };
+    } finally {
+      clearTimeout(timer);
     }
+  },
+
+  // Get a new access token using the refresh token (SimpleJWT rotates both)
+  async _refreshToken() {
+    const refresh = Auth.getRefreshToken();
+    if (!refresh) return false;
+    try {
+      const { res, data } = await this._send(
+        "/users/token/refresh/",
+        "POST",
+        { refresh },
+        false,
+      );
+      if (!res.ok || !data.access) return false;
+      localStorage.setItem("access_token", data.access);
+      if (data.refresh) localStorage.setItem("refresh_token", data.refresh);
+      return true;
+    } catch {
+      return false;
+    }
+  },
+
+  async request(endpoint, method = "GET", body = null, auth = true) {
+    let { res, data } = await this._send(endpoint, method, body, auth);
+
+    // Access token expired -> refresh once and retry
+    if (res.status === 401 && auth && Auth.getRefreshToken()) {
+      const refreshed = await this._refreshToken();
+      if (refreshed) {
+        ({ res, data } = await this._send(endpoint, method, body, auth));
+      } else {
+        Auth.clearAuth();
+        showToast("Session expired. Please login again.", "warning");
+        setTimeout(() => (window.location.href = "login.html"), 1500);
+      }
+    }
+
+    if (!res.ok) throw { status: res.status, data };
+    return data;
   },
 
   get(endpoint, auth = true) {
@@ -105,7 +173,7 @@ function initNavbar() {
           🛒 <span class="cart-badge" id="cartCount">0</span>
         </a>
         <div style="display:flex;align-items:center;gap:0.5rem;">
-          <span style="font-size:0.9rem;color:var(--text-secondary)">Hi, ${user?.full_name?.split(" ")[0]}</span>
+          <span style="font-size:0.9rem;color:var(--text-secondary)">Hi, ${user?.full_name?.split(" ")[0] || ""}</span>
           <button class="btn btn-outline btn-sm" onclick="logout()">Logout</button>
         </div>
       `;
@@ -236,6 +304,11 @@ function createFoodCard(item) {
   const hasDiscount =
     item.discount_price &&
     parseFloat(item.discount_price) < parseFloat(item.price);
+  // Escape quotes so names like "Chef's Special" don't break the onclick
+  const safeName = String(item.name)
+    .replace(/\\/g, "\\\\")
+    .replace(/'/g, "\\'")
+    .replace(/"/g, "&quot;");
   return `
     <div class="food-card fade-up">
       <div class="food-card-img">
@@ -260,7 +333,7 @@ function createFoodCard(item) {
             <span class="food-price">${formatPrice(item.final_price)}</span>
             ${hasDiscount ? `<span class="food-price-original">${formatPrice(item.price)}</span>` : ""}
           </div>
-          <button class="btn btn-primary btn-sm" onclick="addToCart(${item.id}, '${item.name}')">
+          <button class="btn btn-primary btn-sm" onclick="addToCart(${item.id}, '${safeName}')">
             Add to Cart
           </button>
         </div>
