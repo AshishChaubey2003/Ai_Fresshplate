@@ -1,49 +1,41 @@
-# 🍽️ FreshPlate — AI-Powered Food Ordering System
+# 🍽️ AI FreshPlate — AI-Powered Food Ordering & Food Rescue Platform
 
-![Python](https://img.shields.io/badge/Python-3.10+-blue?style=for-the-badge&logo=python)
-![Django](https://img.shields.io/badge/Django-4.x-green?style=for-the-badge&logo=django)
-![DRF](https://img.shields.io/badge/Django_REST_Framework-red?style=for-the-badge)
-![PostgreSQL](https://img.shields.io/badge/PostgreSQL-blue?style=for-the-badge&logo=postgresql)
-![Claude AI](https://img.shields.io/badge/Claude_AI-Anthropic-orange?style=for-the-badge)
-![JWT](https://img.shields.io/badge/JWT-Authentication-yellow?style=for-the-badge)
+![Python](https://img.shields.io/badge/Python-3.10+-blue?style=flat-square&logo=python)
+![Django](https://img.shields.io/badge/Django-4.x-green?style=flat-square&logo=django)
+![DRF](https://img.shields.io/badge/DRF-REST_API-red?style=flat-square)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-Database-blue?style=flat-square&logo=postgresql)
+![Gemini AI](https://img.shields.io/badge/Google_Gemini-AI-orange?style=flat-square&logo=google)
+![JWT](https://img.shields.io/badge/JWT-Auth-yellow?style=flat-square)
+![Docker](https://img.shields.io/badge/Docker-Containerized-2496ED?style=flat-square&logo=docker)
+![Live](https://img.shields.io/badge/Live-Deployed-brightgreen?style=flat-square)
 
-> A full-stack food ordering web application powered by Django REST Framework and Claude AI — featuring smart food recommendations, role-based access, cart management, and a food donation module.
+> A full-stack food ordering and food rescue platform built with Django REST Framework and Google Gemini AI — featuring smart food recommendations, 3-tier role-based access, cart management, and a food donation lifecycle module.
 
----
-
-## 📌 Table of Contents
-
-- [About the Project](#about-the-project)
-- [Features](#features)
-- [Tech Stack](#tech-stack)
-- [Project Structure](#project-structure)
-- [Getting Started](#getting-started)
-- [Environment Variables](#environment-variables)
-- [API Overview](#api-overview)
-- [User Roles](#user-roles)
-- [AI Chatbot](#ai-chatbot)
-- [Contributing](#contributing)
-- [License](#license)
+🌐 **Live Demo:** [ai-fresshplate.vercel.app](https://ai-fresshplate.vercel.app/) &nbsp;|&nbsp; 🔗 **Backend API:** [Render](https://render.com)
 
 ---
 
-## 📖 About the Project
+## 📌 What This Project Does
 
-**FreshPlate** is a modern food ordering platform that combines the power of Django REST Framework with Anthropic's Claude AI to deliver a seamless and intelligent food ordering experience. Users can browse menus, place orders, donate food, and interact with an AI chatbot — all through a clean HTML/CSS/JS frontend consuming a robust REST API backend.
+**AI FreshPlate** solves two real problems:
+1. **Food Ordering** — Customers browse, cart, and order food with real-time tracking
+2. **Food Rescue** — Donors list surplus food, rescue centers claim it via a 3-step approval lifecycle
+
+Backed by **Google Gemini AI** for personalized food recommendations and a **CI/CD pipeline** that auto-deploys on every Git push.
 
 ---
 
-## ✨ Features
+## ✨ Key Features & Numbers
 
-- 🔐 **JWT Authentication** — Secure login & registration with token-based auth
-- 👥 **3 User Roles** — Admin, Customer, and Donor with role-based permissions
-- 🛒 **Cart System** — Add, update, remove items and place orders
+- 🔐 **JWT Authentication** — Access + refresh token flow, secure login & registration
+- 👥 **3-Tier RBAC** — Admin, Customer, Donor with strict permission classes per endpoint
+- 🛒 **Dynamic Cart** — Add, update, remove items; 5+ order status transitions with real-time tracking
 - 🍱 **Food Management** — Browse and manage food items and categories
-- 📦 **Order Management** — Place and track food orders in real time
-- 🤝 **Food Donation Module** — Donors can list and manage food donations
-- 🤖 **AI Chatbot** — Claude AI-powered assistant for menu help & recommendations
-- 🌐 **REST API** — Clean, scalable API endpoints for all features
-- 🗄️ **PostgreSQL** — Reliable relational database for all data storage
+- 🤝 **Food Rescue Module** — 3-step donor → rescue center approval lifecycle
+- 🤖 **Gemini AI Chatbot** — Personalized food recommendations via Google Gemini API
+- 📡 **10+ REST APIs** — Clean, scalable DRF endpoints with Swagger docs
+- 🗄️ **PostgreSQL** — Optimized ORM queries with custom permission classes
+- 🚀 **CI/CD** — Auto-deploy on every Git push via Render + Vercel
 
 ---
 
@@ -53,44 +45,32 @@
 |-------|-----------|
 | Backend | Django 4.x, Django REST Framework |
 | Authentication | JWT (SimpleJWT) |
-| Database | PostgreSQL |
-| AI Assistant | Anthropic Claude API |
-| Frontend | HTML, CSS, JavaScript |
+| Database | PostgreSQL + Django ORM |
+| AI Assistant | Google Gemini API |
+| Frontend | React, JavaScript, HTML5, CSS3, Axios |
+| Deployment | Render (backend), Vercel (frontend) |
+| DevOps | Docker, CI/CD (GitHub → Render) |
 
 ---
 
 ## 📁 Project Structure
 
 ```
-FreshPlate/
-├── freshplate/          # Main Django project settings
-├── users/               # User auth, roles & profiles
-├── food/                # Food items & categories
-├── orders/              # Order placement & tracking
-├── donations/           # Food donation module
-├── chatbot/             # Claude AI chatbot integration
-├── frontend/            # HTML, CSS, JS files
-├── .env                 # Environment variables (not committed)
-├── .gitignore
-├── manage.py
-└── requirements.txt
-
-
-FreshPlate/
+Ai_Fresshplate/
 ├── backend/
-│   ├── chatbot/             # Claude AI chatbot integration
-│   ├── donations/           # Food donation module
+│   ├── chatbot/             # Google Gemini AI chatbot integration
+│   ├── donations/           # Food rescue & donation module
 │   ├── food/                # Food items & categories
-│   ├── freshplate/          # Main Django project settings
+│   ├── freshplate/          # Django project settings
 │   ├── media/               # Uploaded media files
 │   ├── orders/              # Order placement & tracking
-│   ├── users/               # User auth, roles & profiles
-│   ├── .env                 # Environment variables (not committed)
+│   ├── users/               # Auth, roles & profiles
 │   ├── manage.py
 │   └── requirements.txt
 ├── frontend/
-│   └── (HTML, CSS, JS files)
-└── freshplate_env/          # Virtual environment (not committed)
+│   └── (React + JS + HTML/CSS)
+├── docker-compose.yml
+└── .env.example
 ```
 
 ---
@@ -101,18 +81,19 @@ FreshPlate/
 
 - Python 3.10+
 - PostgreSQL
-- pip
+- Node.js (for frontend)
+- Docker (optional)
 
 ### Installation
 
 ```bash
 # 1. Clone the repository
 git clone https://github.com/AshishChaubey2003/Ai_Fresshplate.git
-cd Ai_Fresshplate
+cd Ai_Fresshplate/backend
 
 # 2. Create virtual environment
 python -m venv venv
-source venv/bin/activate        # On Windows: venv\Scripts\activate
+source venv/bin/activate        # Windows: venv\Scripts\activate
 
 # 3. Install dependencies
 pip install -r requirements.txt
@@ -136,11 +117,8 @@ python manage.py runserver
 
 ## 🔑 Environment Variables
 
-Create a `.env` file in the root directory:
-
 ```env
 SECRET_KEY=your_django_secret_key
-
 DEBUG=True
 
 DB_NAME=freshplate_db
@@ -149,7 +127,7 @@ DB_PASSWORD=your_postgres_password
 DB_HOST=localhost
 DB_PORT=5432
 
-ANTHROPIC_API_KEY=your_anthropic_api_key
+GEMINI_API_KEY=your_google_gemini_api_key
 ```
 
 ---
@@ -161,53 +139,55 @@ ANTHROPIC_API_KEY=your_anthropic_api_key
 | POST | `/api/auth/register/` | Register new user |
 | POST | `/api/auth/login/` | Login & get JWT token |
 | GET | `/api/food/` | List all food items |
-| POST | `/api/orders/` | Place an order |
-| GET | `/api/orders/` | List user orders |
 | POST | `/api/cart/` | Add item to cart |
+| POST | `/api/orders/` | Place an order |
+| GET | `/api/orders/` | List & track orders |
 | GET | `/api/donations/` | List food donations |
-| POST | `/api/chatbot/` | Chat with AI assistant |
+| POST | `/api/donations/claim/` | Rescue center claims donation |
+| POST | `/api/chatbot/` | Chat with Gemini AI assistant |
+| GET | `/api/admin/dashboard/` | Admin overview (Admin only) |
 
 ---
 
-## 👥 User Roles
+## 👥 User Roles & Permissions
 
 | Role | Permissions |
 |------|------------|
 | **Admin** | Full access — manage users, food, orders, donations |
-| **Customer** | Browse food, manage cart, place orders, use chatbot |
-| **Donor** | List and manage food donations |
+| **Customer** | Browse food, manage cart, place & track orders, use chatbot |
+| **Donor** | List food donations, manage 3-step rescue lifecycle |
 
 ---
 
 ## 🤖 AI Chatbot
 
-FreshPlate integrates **Anthropic's Claude AI** to power an intelligent chatbot that helps users:
+FreshPlate integrates **Google Gemini AI** to power an intelligent assistant that helps users:
 
-- 🔍 Discover menu items
+- 🔍 Discover and search menu items
 - 💡 Get personalized food recommendations
 - ❓ Answer FAQs about orders and delivery
-- 🍕 Suggest meals based on preferences
-
-The chatbot is accessible via the `/api/chatbot/` endpoint and is integrated into the frontend for a seamless chat experience.
+- 🍕 Suggest meals based on preferences and dietary needs
 
 ---
 
-## 🤝 Contributing
+## 🚀 Roadmap
 
-Contributions are welcome! Feel free to fork the repo and submit a pull request.
-
-```bash
-git checkout -b feature/your-feature-name
-git commit -m "Add your feature"
-git push origin feature/your-feature-name
-```
+- [ ] Add Stripe payment integration
+- [ ] Push notifications for order status
+- [ ] Mobile app (React Native)
+- [ ] Analytics dashboard for Admin
 
 ---
 
 ## 📄 License
 
-This project is open source and available under the [MIT License](LICENSE).
+MIT License — open source and free to use.
 
 ---
 
-<p align="center">Made with ❤️ by <a href="https://github.com/AshishChaubey2003">Ashish Chaubey</a></p>
+<p align="center">Built by <a href="https://github.com/AshishChaubey2003">Ashish Kumar Chaubey</a> — B.Tech CSE 2025 | Lucknow, India</p>
+<p align="center">
+  <a href="https://www.linkedin.com/in/ashishchaubey2dec/">LinkedIn</a> •
+  <a href="https://personal-portfolio-website-one-azure.vercel.app/">Portfolio</a> •
+  <a href="mailto:sashishchaubey1234@gmail.com">Email</a>
+</p>
